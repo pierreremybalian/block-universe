@@ -65,7 +65,10 @@ for (const job of jobs) {
   const errors: string[] = [];
   page.on('console', (m) => {
     const t = m.text();
-    if (m.type() === 'error' || /WebGPU|backend|\[scene|\[field|\[quality/.test(t)) console.log(`  [${m.type()}] ${t.slice(0, 400)}`);
+    // Missing stills (before `pnpm stills` has run) are expected 404s, not scene errors.
+    const missingAsset = m.type() === 'error' && /Failed to load resource.*404/.test(t);
+    if (missingAsset) return;
+    if (m.type() === 'error' || /WebGPU|backend|\[scene|\[quality/.test(t)) console.log(`  [${m.type()}] ${t.slice(0, 400)}`);
     if (m.type() === 'error') errors.push(t);
   });
   page.on('pageerror', (e) => {
