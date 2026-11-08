@@ -78,10 +78,10 @@ export const shutter = registerStage('shutter', {
     if (s.knifeA > 0.5 && s.photos < 0.5) rows.push({ label: 'A', value: 'at rest', tone: 'a' });
     if (s.knifeB > 0.5) {
       rows.push({ label: 'B', value: `${Math.abs(s.beta).toFixed(2)} c`, tone: 'b' });
-      rows.push({ label: 'Blade bend in B’s photo', value: `${Math.round(bendDegrees(s.beta))}°`, tone: 'both' });
+      rows.push({ label: 'Blade bend in B’s photo', value: `${Math.round(bendDegrees(s.beta))} degrees`, tone: 'both' });
     }
     if (s.photos > 0.5) {
-      rows.push({ label: 'Real propeller, walking past', value: `${sci(realPropellerBendDegrees(), 1)}°`, tone: 'mute' });
+      rows.push({ label: 'Real propeller bend, walking past', value: `${sci(realPropellerBendDegrees(), 1)} degrees`, tone: 'mute' });
     }
     return rows;
   },

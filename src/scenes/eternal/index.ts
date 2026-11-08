@@ -26,8 +26,16 @@ const params = {
   offset: { tx: -0.6, tt: -0.2 },
   /** In the pull-back, the block sits up and to the right, clear of the captions. */
   pullOffset: { tx: -2.2, tt: -0.9 },
+  /** Portrait screens (aspect < 1): the block narrower on screen, above the captions. */
+  portrait: {
+    camera: { az: 0.2, el: 0.17, dist: 18.5, tx: 0, tt: -0.9 },
+    chainCamera: { az: 0.36, el: 0.22, dist: 18.5, tx: 0, tt: -0.9 },
+    pullCamera: { az: 1.1, el: 0.46, dist: 21, tx: 0, tt: -1.2 },
+  },
   fanColour: [0.78, 0.74, 1.0] as RGB,
-  fanOpacity: 0.12,
+  fanOpacity: 0.16,
+  /** How far behind the sweep (in β) a blade has faded to 1/e. */
+  fanTrail: 0.32,
   sweepColour: PAL.both,
   litColour: [1.0, 0.86, 0.55] as RGB,
   tick: 0.5,
@@ -42,6 +50,7 @@ export default function eternalScene(): BlockScene {
   const disposers: (() => void)[] = [];
   const tmp = new Vector3();
   let state = eternalState(0);
+  let aspect = 16 / 9;
   const lamp = beacon(CHAIN_LAMP);
   const cBeta = chainBeta();
   const chainPts = [
@@ -58,6 +67,7 @@ export default function eternalScene(): BlockScene {
     { id: 'elseR', text: 'now for someone', tone: 'warm', side: 'center', size: 'sm' },
     { id: 'future', text: 'A’s future', tone: 'warm', side: 'right', size: 'sm' },
     { id: 'chain', text: `someone at lamp ${CHAIN_LAMP}`, tone: 'b', side: 'right', size: 'sm' },
+    { id: 'chainP', text: `someone at lamp ${CHAIN_LAMP}`, tone: 'b', side: 'below', size: 'sm' },
     { id: 'all', text: 'no privileged now', tone: 'both', side: 'center', size: 'sm' },
     ...BEACONS.map((b) => ({ id: `b${b.n}`, text: String(b.n), tone: 'event' as const, side: 'right' as const, size: 'sm' as const })),
   ]);
@@ -149,9 +159,13 @@ export default function eternalScene(): BlockScene {
       const fade = s.fanFade;
 
       // The fan: blades appear as the sweep passes them; the sweeping knife lights what it cuts.
+      // The fan leaves a short trail: a blade fades as the sweep moves past it, so only the last few show, and the
+      // whole trail clears once the sweep is done (the light cone keeps marking the region it covered).
+      const after = 1 - Math.min(1, Math.max(0, (local - 0.44) / 0.06));
       blades.forEach((k, i) => {
-        const passed = local >= 0.12 && s.beta >= fanBetas[i]! - 1e-9 ? 1 : 0;
-        k.set(fanBetas[i]!, 0, passed * s.fanOn * params.fanOpacity * fade);
+        const lag = s.beta - fanBetas[i]!;
+        const passed = local >= 0.12 && lag >= -1e-9 ? Math.exp(-lag / params.fanTrail) : 0;
+        k.set(fanBetas[i]!, 0, passed * s.fanOn * params.fanOpacity * fade * after);
       });
       sweep.set(s.beta, 0, s.knife * 0.85);
       kit.setKnife(0, s.beta, 0, s.knife, params.sweepColour);
@@ -180,17 +194,21 @@ export default function eternalScene(): BlockScene {
       glass.opacity.value = 1 - 0.35 * s.all;
       for (let i = 0; i < 6; i++) glass.edges.set(i, 1, 1 + 1.4 * s.all);
 
-      const c = params.camera;
-      const ch = params.chainCamera;
-      const pc = params.pullCamera;
+      const portrait = aspect < 1;
+      const pp = params.portrait;
+      const o = params.offset;
+      const po = params.pullOffset;
+      const c = portrait ? pp.camera : { ...params.camera, tx: o.tx, tt: o.tt };
+      const ch = portrait ? pp.chainCamera : { ...params.chainCamera, tx: o.tx, tt: o.tt };
+      const pc = portrait ? pp.pullCamera : { ...params.pullCamera, tx: po.tx, tt: po.tt };
       const kc = s.chain * (1 - s.pull);
       rig.apply(
         {
           az: c.az + (ch.az - c.az) * kc + (pc.az - c.az) * s.pull,
           el: c.el + (ch.el - c.el) * kc + (pc.el - c.el) * s.pull,
           dist: c.dist + (ch.dist - c.dist) * kc + (pc.dist - c.dist) * s.pull,
-          tx: params.offset.tx + (params.pullOffset.tx - params.offset.tx) * s.pull,
-          tt: params.offset.tt + (params.pullOffset.tt - params.offset.tt) * s.pull,
+          tx: c.tx + (ch.tx - c.tx) * kc + (pc.tx - c.tx) * s.pull,
+          tt: c.tt + (ch.tt - c.tt) * kc + (pc.tt - c.tt) * s.pull,
           ty: 0,
         },
         elapsed,
@@ -204,12 +222,15 @@ export default function eternalScene(): BlockScene {
       const quiet = 1 - s.pull;
       place(L.A!, 0, WORLD.t1, 0, quiet);
       place(L.here!, 0, 0, 0, quiet * (1 - s.all));
-      place(L.cone!, 1.5, 1.5, 0, 0.8 * (1 - s.all) * quiet);
-      place(L.elseL!, -2.55, -0.55, WORLD.y1, s.regions);
-      place(L.elseR!, 2.55, 0.55, WORLD.y1, s.regions);
+      // Portrait keeps only the labels the beats name; the regions are in the captions and the dual clock.
+      const land = portrait ? 0 : 1;
+      place(L.cone!, 1.5, 1.5, 0, 0.8 * (1 - s.all) * quiet * land);
+      place(L.elseL!, -2.55, -0.55, WORLD.y1, s.regions * land);
+      place(L.elseR!, 2.55, 0.55, WORLD.y1, s.regions * land);
       place(L.future!, FUTURE.x, FUTURE.t, FUTURE.y, s.future * (1 - s.all));
-      place(L.chain!, chainPts[1]![0]!, chainPts[1]![1]!, chainPts[1]![2]!, s.chain * fade);
-      place(L.all!, 0, WORLD.t1 + 0.7, 0, s.pull);
+      place(L.chain!, chainPts[1]![0]!, chainPts[1]![1]!, chainPts[1]![2]!, s.chain * fade * land);
+      place(L.chainP!, chainPts[0]![0]!, chainPts[0]![1]! - 0.1, chainPts[0]![2]!, s.chain * fade * (1 - land));
+      place(L.all!, 0, WORLD.t1 + (portrait ? 1.1 : 0.7), 0, s.pull);
       BEACONS.forEach((b) => place(L[`b${b.n}`]!, b.x, b.t, b.y, 0.8 * quiet * (1 - s.all * 0.5)));
     },
 
@@ -221,6 +242,7 @@ export default function eternalScene(): BlockScene {
 
     resize(w, h) {
       rig.resize(w, h);
+      aspect = w / Math.max(1, h);
     },
 
     dispose() {

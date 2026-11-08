@@ -47,6 +47,17 @@ const params = {
   photoH: 0.44,
   photoGap: 0.022,
   photoTop: 0.24,
+  /** Portrait screens (aspect < 1): block above, the two photographs side by side below it, clear of the dual
+   *  clock (top ~12%) and the captions (bottom ~30%). */
+  portrait: {
+    camera: { az: 0.55, el: 0.34, dist: 13.5, tx: 0, tt: -0.9 },
+    photoCamera: { az: 0.42, el: 0.3, dist: 16.4, tx: 0, tt: -3.5 },
+    pullCamera: { az: 0.8, el: 0.42, dist: 15.5, tx: 0, tt: -0.9 },
+    /** Photograph width (fraction of screen width), gap, and the bottom edge of the photographs. */
+    photoW: 0.44,
+    gap: 0.03,
+    bottom: 0.69,
+  },
 };
 
 /** The rotor at time t, as seen at (x, y): three tapered blades (one with a red tip), a hub, two orbiting lights. */
@@ -94,6 +105,7 @@ export default function shutterScene(): BlockScene {
 
   const labels = new LabelSet([
     { id: 'rotor', text: 'a rotor’s history', tone: 'mute', side: 'right', size: 'sm' },
+    { id: 'rotorP', text: 'a rotor’s history', tone: 'mute', side: 'above', size: 'sm' },
     { id: 'nowA', text: 'A’s now', tone: 'a', side: 'left', size: 'sm' },
     { id: 'nowB', text: 'B’s now', tone: 'b', side: 'right', size: 'sm' },
     { id: 'photoA', text: 'A’s photograph', tone: 'a', side: 'center', size: 'sm' },
@@ -101,6 +113,7 @@ export default function shutterScene(): BlockScene {
   ]);
   const L = {
     rotor: labels.index('rotor'),
+    rotorP: labels.index('rotorP'),
     nowA: labels.index('nowA'),
     nowB: labels.index('nowB'),
     photoA: labels.index('photoA'),
@@ -202,29 +215,40 @@ export default function shutterScene(): BlockScene {
       ribbons.set(0, 1, 1);
       for (let i = 1; i <= ROTOR.lights; i++) ribbons.set(i, Math.min(1, Math.max(0, (s.reveal - B.t0) / (B.t1 - B.t0))), 1);
 
-      const c = params.camera;
-      const ph = params.photoCamera;
-      const pc = params.pullCamera;
+      const portrait = aspect < 1;
+      const pp = params.portrait;
+      const c = portrait ? pp.camera : { ...params.camera, tx: 0, tt: 0 };
+      const ph = portrait ? pp.photoCamera : params.photoCamera;
+      const pc = portrait ? pp.pullCamera : { ...params.pullCamera, tx: 0, tt: 0 };
       const k = smooth(s.photos);
       rig.apply(
         {
           az: c.az + (ph.az - c.az) * k + (pc.az - c.az) * s.pull,
           el: c.el + (ph.el - c.el) * k + (pc.el - c.el) * s.pull,
           dist: c.dist + (ph.dist - c.dist) * k + (pc.dist - c.dist) * s.pull,
-          tx: ph.tx * k,
-          tt: ph.tt * k,
+          tx: c.tx + (ph.tx - c.tx) * k + (pc.tx - c.tx) * s.pull,
+          tt: c.tt + (ph.tt - c.tt) * k + (pc.tt - c.tt) * s.pull,
           ty: 0,
         },
         elapsed,
       );
 
-      // Photograph panels: two squares side by side on the right.
-      const h = params.photoH;
-      const w = h / aspect;
-      const right = 0.965;
-      panelB.x = right - w;
-      panelA.x = panelB.x - params.photoGap / aspect - w;
-      panelA.y = panelB.y = params.photoTop;
+      // Photograph panels: two squares, on the right (landscape) or below the block (portrait).
+      let w: number;
+      let h: number;
+      if (portrait) {
+        w = pp.photoW;
+        h = w * aspect;
+        panelA.x = 0.5 - pp.gap / 2 - w;
+        panelB.x = 0.5 + pp.gap / 2;
+        panelA.y = panelB.y = pp.bottom - h;
+      } else {
+        h = params.photoH;
+        w = h / aspect;
+        panelB.x = 0.965 - w;
+        panelA.x = panelB.x - params.photoGap / aspect - w;
+        panelA.y = panelB.y = params.photoTop;
+      }
       panelA.w = panelB.w = w;
       panelA.h = panelB.h = h;
 
@@ -233,11 +257,14 @@ export default function shutterScene(): BlockScene {
         kit.viewCPU(x, t, y, tmp);
         labels.place(i, tmp.x, tmp.y, tmp.z, rig.camera, o);
       };
-      place(L.rotor, B.x1, B.t1 - 0.25, B.y0, Math.max(0, 1 - s.knifeA) * Math.min(1, (s.reveal - B.t0) / 1.5) * (1 - k));
+      const rotorO = Math.max(0, 1 - s.knifeA) * Math.min(1, (s.reveal - B.t0) / 1.5) * (1 - k);
+      place(L.rotor, B.x1, B.t1 - 0.25, B.y0, portrait ? 0 : rotorO);
+      place(L.rotorP, 0, B.t1 + 0.4, 0, portrait ? rotorO : 0);
       place(L.nowA, B.x0, s.c, B.y1, s.knifeA * (1 - k));
       place(L.nowB, B.x1, s.beta * B.x1 + s.c, B.y1, s.knifeB * (1 - k));
-      labels.placeScreen(L.photoA, panelA.x + w / 2, panelA.y - 0.035, k);
-      labels.placeScreen(L.photoB, panelB.x + w / 2, panelB.y - 0.035, k);
+      const above = portrait ? 0.018 : 0.035;
+      labels.placeScreen(L.photoA, panelA.x + w / 2, panelA.y - above, k);
+      labels.placeScreen(L.photoB, panelB.x + w / 2, panelB.y - above, k);
     },
 
     render(target: RenderTarget) {

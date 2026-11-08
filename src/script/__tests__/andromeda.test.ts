@@ -50,7 +50,7 @@ describe('andromeda script', () => {
   it('readouts never throw and switch to real speeds', () => {
     for (let k = 0; k <= 100; k++) expect(() => andromeda.readouts(k / 100)).not.toThrow();
     expect(andromeda.readouts(0.5).some((r) => r.value.includes('days apart'))).toBe(true);
-    expect(andromeda.readouts(0.9).some((r) => r.value.includes('million yr'))).toBe(true);
+    expect(andromeda.readouts(0.9).some((r) => r.value.includes('Myr'))).toBe(true);
   });
   it('copy numbers match the physics', () => {
     expect(copy).toContain(`${WALK_SHIFT_DAYS.toFixed(1)} days ahead`);

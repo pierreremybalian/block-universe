@@ -133,7 +133,7 @@ export const andromeda = registerStage('andromeda', {
       if (s.loupe > 0.3) rows.push({ label: 'Their nows at Andromeda', value: `${(2 * WALK_SHIFT_DAYS).toFixed(1)} days apart`, tone: 'both' });
     } else {
       rows.push({ label: 'Speed', value: `${s.beta.toFixed(2)} c`, tone: 'both' });
-      rows.push({ label: 'Possible nows at Andromeda', value: `±${((s.beta * NOW_WIDTH_YEARS) / 1e6).toFixed(2)} million yr`, tone: 'light' });
+      rows.push({ label: 'Possible nows at Andromeda', value: `±${((s.beta * NOW_WIDTH_YEARS) / 1e6).toFixed(2)} Myr`, tone: 'light' });
     }
     return rows;
   },

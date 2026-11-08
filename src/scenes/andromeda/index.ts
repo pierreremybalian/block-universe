@@ -47,6 +47,14 @@ const params = {
   /** Loupe panel (fractions of the screen) and its camera. */
   loupePanel: { x: 0.66, y: 0.24, w: 0.29, h: 0.56 } as Panel,
   loupeCamera3: { az: 0.32, el: 0.1, dist: 30, fov: 40 },
+  /** Portrait screens (aspect < 1): the block above, the loupe below it across the width, the Atlas card on top
+   *  in the last part (it sits at the top on phones), all clear of the captions (bottom ~30%). */
+  portrait: {
+    camera: { az: 0.3, el: 0.16, dist: 22, tx: 0, tt: -1.1 },
+    loupeCamera: { az: 0.38, el: 0.14, dist: 23, tx: 0, tt: -3.9 },
+    atlasCamera: { az: 0.55, el: 0.3, dist: 33, tx: 0, tt: 1.6 },
+    loupePanel: { x: 0.06, y: 0.475, w: 0.88, h: 0.21 } as Panel,
+  },
 };
 
 /** Loupe world: one unit is one day (and one light-day). */
@@ -79,12 +87,15 @@ export default function andromedaScene(): BlockScene {
   const labels = new LabelSet([
     { id: 'earth', text: 'Earth', tone: 'plain', side: 'above' },
     { id: 'andromeda', text: 'Andromeda', tone: 'plain', side: 'above' },
+    { id: 'earthP', text: 'Earth', tone: 'plain', side: 'left' },
+    { id: 'andromedaP', text: 'Andromeda', tone: 'plain', side: 'right' },
     { id: 'dist', text: '2.5 million light-years', tone: 'mute', side: 'above', size: 'sm' },
     { id: 'here', text: 'here-now', tone: 'both', side: 'left', size: 'sm' },
-    { id: 'walkA', text: 'walking toward', tone: 'a', side: 'right', size: 'sm' },
-    { id: 'walkB', text: 'walking away', tone: 'b', side: 'right', size: 'sm' },
+    { id: 'walkA', text: 'walking toward', tone: 'a', side: 'left', size: 'sm' },
+    { id: 'walkB', text: 'walking away', tone: 'b', side: 'left', size: 'sm' },
     { id: 'exag', text: `tilt exaggerated ×${sci(WALK_EXAGGERATION, 2)}`, tone: 'mute', side: 'below', size: 'sm' },
     { id: 'ribbon', text: '±2.5 million years of Andromeda', tone: 'light', side: 'left', size: 'sm' },
+    { id: 'ribbonP', text: '±2.5 million years', tone: 'light', side: 'above', size: 'sm' },
     { id: 'cone', text: 'light cone', tone: 'light', side: 'right', size: 'sm' },
     { id: 'lTitle', text: `Loupe at Andromeda · time ×${sci(LOUPE_FACTOR, 1)}`, tone: 'mute', side: 'center', size: 'sm' },
     { id: 'lA', text: `+${WALK_SHIFT_DAYS.toFixed(1)} days`, tone: 'a', side: 'right', size: 'sm' },
@@ -250,22 +261,27 @@ export default function andromedaScene(): BlockScene {
       events.setIntensity(E.focus, 0.3 * s.loupe);
       events.commit();
 
-      const c = params.camera;
-      const lc = params.loupeCamera;
-      const pc = params.pullCamera;
+      // Camera: base → loupe (k) → end (pull on landscape; the Atlas framing on portrait).
+      const portrait = aspect < 1;
+      const pp = params.portrait;
+      const o = params.offset;
+      const c = portrait ? pp.camera : { ...params.camera, tx: o.tx, tt: o.tt };
+      const lc = portrait ? pp.loupeCamera : { ...params.loupeCamera, tx: o.tx + params.loupeCamera.tx, tt: o.tt };
+      const pc = portrait ? pp.atlasCamera : { ...params.pullCamera, tx: o.tx, tt: o.tt };
       const k = smooth(s.loupe);
+      const f = portrait ? smooth(Math.min(1, Math.max(0, (local - 0.78) / 0.1))) : s.pull;
       rig.apply(
         {
-          az: c.az + (lc.az - c.az) * k + (pc.az - c.az) * s.pull,
-          el: c.el + (lc.el - c.el) * k + (pc.el - c.el) * s.pull,
-          dist: c.dist + (lc.dist - c.dist) * k + (pc.dist - c.dist) * s.pull,
-          // Sit the block above the captions (bottom left) and, with the loupe open, left of it.
-          tx: params.offset.tx + lc.tx * k,
-          tt: params.offset.tt,
+          az: c.az + (lc.az - c.az) * k + (pc.az - c.az) * f,
+          el: c.el + (lc.el - c.el) * k + (pc.el - c.el) * f,
+          dist: c.dist + (lc.dist - c.dist) * k + (pc.dist - c.dist) * f,
+          tx: c.tx + (lc.tx - c.tx) * k + (pc.tx - c.tx) * f,
+          tt: c.tt + (lc.tt - c.tt) * k + (pc.tt - c.tt) * f,
           ty: 0,
         },
         elapsed,
       );
+      loupePanel = portrait ? pp.loupePanel : params.loupePanel;
 
       // Loupe camera: a still, front-on view of ±LOUPE_DAYS around Andromeda's worldline.
       const l3 = params.loupeCamera3;
@@ -279,19 +295,25 @@ export default function andromedaScene(): BlockScene {
         kit.viewCPU(x, t, y, tmp);
         labels.place(i, tmp.x, tmp.y, tmp.z, rig.camera, o);
       };
-      place(L.earth!, EARTH_X, B.t1, 0, 1);
-      place(L.andromeda!, ANDROMEDA_X, B.t1, 0, 1);
-      place(L.dist!, 0, B.t0 + 0.02, B.y1, 1 - s.real);
+      // Names: above the worldlines on landscape; beside them, lower down, on portrait (the top is the HUD's).
+      place(L.earth!, EARTH_X, B.t1, 0, portrait ? 0 : 1);
+      place(L.andromeda!, ANDROMEDA_X, B.t1, 0, portrait ? 0 : 1);
+      place(L.earthP!, EARTH_X, 1.9, 0, portrait ? 1 : 0);
+      place(L.andromedaP!, ANDROMEDA_X, 1.9, 0, portrait ? 1 : 0);
+      place(L.dist!, 0, B.t0 + 0.02, B.y1, (1 - s.real) * (portrait ? 1 - k : 1));
       place(L.here!, EARTH_X, 0, 0, s.hereNow * (1 - s.real * 0.7));
       place(L.walkA!, walkA[1]![0]!, walkA[1]![1]!, 0, s.walkers * (1 - s.real));
       place(L.walkB!, walkB[0]![0]!, walkB[0]![1]!, 0, s.walkers * (1 - s.real));
-      place(L.exag!, 0.9, -beta * (0.9 - EARTH_X) - 0.55, B.y0, s.exaggerated);
-      place(L.focus!, ANDROMEDA_X + 0.25, 0, 0, s.loupe);
-      place(L.ribbon!, ANDROMEDA_X - 0.12, Math.min(1.4, tCross * 0.5), 0, s.real * Math.min(1, s.ribbon));
+      // Below the cyan knife, right of Earth (the walkers' tags are on Earth's left).
+      place(L.exag!, -0.25, -beta * (-0.25 - EARTH_X) - 0.7, B.y0, s.exaggerated);
+      place(L.focus!, ANDROMEDA_X + 0.2, portrait ? -1.6 : -0.95, 0, s.loupe);
+      const ribbonO = s.real * Math.min(1, s.ribbon);
+      place(L.ribbon!, ANDROMEDA_X - 0.12, Math.min(1.4, tCross * 0.5), 0, portrait ? 0 : ribbonO);
+      place(L.ribbonP!, ANDROMEDA_X, tCross + 0.15, 0, portrait ? ribbonO : 0);
       place(L.cone!, EARTH_X - 0.6, -2.0, B.y1, s.cone);
 
       // Labels (loupe), in the loupe panel with the loupe camera.
-      const lp = params.loupePanel;
+      const lp = loupePanel;
       const a0 = lCam.aspect;
       lCam.aspect = aspect * (lp.w / lp.h);
       lCam.updateProjectionMatrix();
@@ -303,8 +325,8 @@ export default function andromedaScene(): BlockScene {
       lplace(L.lA!, LB.x1 + 0.3, WALK_SHIFT_DAYS, lo);
       lplace(L.lB!, LB.x1 + 0.3, -WALK_SHIFT_DAYS, lo);
       lplace(L.lLaunch!, -1.0, LAUNCH_DAYS, lo * s.launch);
-      labels.placeScreen(L.lTitle!, lp.x + lp.w / 2, lp.y - 0.03, lo);
-      labels.placeScreen(L.lBead!, lp.x + lp.w / 2, lp.y + lp.h + 0.03, lo);
+      labels.placeScreen(L.lTitle!, lp.x + lp.w / 2, portrait ? lp.y + 0.016 : lp.y - 0.03, lo);
+      labels.placeScreen(L.lBead!, lp.x + lp.w / 2, portrait ? lp.y + lp.h - 0.02 : lp.y + lp.h + 0.03, lo);
       lCam.aspect = a0;
       void lCam;
     },
@@ -315,9 +337,11 @@ export default function andromedaScene(): BlockScene {
       renderer.render(scene, rig.camera);
       const k = smooth(state.loupe);
       if (k < 0.002) return;
-      const lp = params.loupePanel;
+      const lp = loupePanel;
       lFrame.opacity.value = k;
       lFrame.aspect.value = (lp.w * target.width) / Math.max(1, lp.h * target.height);
+      // Two passes of the 90% backdrop: the main block behind the inset (portrait) is fully hidden.
+      renderInPanel(renderer, target, lFrame.scene, lFrame.camera, lp);
       renderInPanel(renderer, target, lFrame.scene, lFrame.camera, lp);
       lCam.aspect = (lp.w * target.width) / Math.max(1, lp.h * target.height);
       lCam.updateProjectionMatrix();
@@ -337,5 +361,6 @@ export default function andromedaScene(): BlockScene {
     },
   };
   let aspect = 16 / 9;
+  let loupePanel: Panel = params.loupePanel;
   return self;
 }
