@@ -69,9 +69,9 @@ export function createBowls(kit: BlockKit, taus: readonly number[], rMax: number
   const ringL = float(1).sub(smoothstep(float(0), fwidth(ringV).mul(1.2), ring));
   const vis = smoothstep(A.w, A.w.add(1), shown);
   const clip = step(tRel, tMax);
-  const lip = exp(tMax.sub(tRel).div(0.02).pow(2).negate()).mul(0.8);
+  const lip = exp(tMax.sub(tRel).div(0.02).abs().pow(2).negate()).mul(0.8);
   const rimFade = float(1).sub(smoothstep(rMax * 0.75, rMax, r));
-  const bottom = exp(r.div(0.06).pow(2).negate()).mul(0.6);
+  const bottom = exp(r.div(0.06).abs().pow(2).negate()).mul(0.6);
   const lum = float(0.04).add(rulingL.mul(0.1)).add(ringL.mul(0.07)).add(bottom).mul(rimFade).add(lip);
   const mat = new MeshBasicNodeMaterial({ transparent: true, depthWrite: false, blending: AdditiveBlending, side: DoubleSide });
   mat.positionNode = kit.toView(sp);

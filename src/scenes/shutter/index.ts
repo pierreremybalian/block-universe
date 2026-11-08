@@ -72,7 +72,7 @@ function rotorImage(x: F, t: F, y: F): V3 {
   const along = smoothstep(0.1, 0.22, r).mul(float(1).sub(smoothstep(ROTOR.r - 0.05, ROTOR.r, r)));
   // Crisp body with a soft glow around it.
   const body = float(1).sub(smoothstep(width.mul(0.55), width, perp));
-  const glow = exp(perp.div(width.mul(2.2)).pow(2).negate()).mul(0.22);
+  const glow = exp(perp.div(width.mul(2.2)).abs().pow(2).negate()).mul(0.22);
   const blade = body.add(glow).mul(along);
   // The blade whose index is 0 gets a red tip, so rotation reads in every photograph.
   const k = a.add(0.5).floor();

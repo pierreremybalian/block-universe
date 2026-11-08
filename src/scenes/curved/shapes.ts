@@ -167,7 +167,7 @@ export function createSkewCones(
   const nR = 12;
   const rv = A.x.mul(nR);
   const ruling = float(1).sub(smoothstep(float(0), fwidth(rv).mul(1.2), abs(fract(rv.add(0.5)).sub(0.5))));
-  const rim = exp(abs(s).sub(1).div(0.05).pow(2).negate());
+  const rim = exp(abs(s).sub(1).div(0.05).abs().pow(2).negate());
   const tip = smoothstep(0.0, 0.12, abs(s));
   const future = smoothstep(-0.02, 0.02, s).mul(0.6).add(0.4);
   const vis = smoothstep(A.z, A.z.add(1), shown);

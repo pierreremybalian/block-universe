@@ -65,7 +65,7 @@ export function createLightCone(kit: BlockKit, o: { rings?: number; rulings?: nu
   const ring = abs(fract(rv.add(0.5)).sub(0.5));
   const ringL = float(1).sub(smoothstep(float(0), fwidth(rv).mul(1.2), ring));
   const lim = step(s, future.add(1e-4)).mul(step(past.negate().sub(1e-4), s));
-  const front = max(exp(s.sub(future).div(0.012).pow(2).negate()).mul(step(future, 0.999)), exp(s.add(past).div(0.012).pow(2).negate()).mul(step(past, 0.999)));
+  const front = max(exp(s.sub(future).div(0.012).abs().pow(2).negate()).mul(step(future, 0.999)), exp(s.add(past).div(0.012).abs().pow(2).negate()).mul(step(past, 0.999)));
   const endFade = float(1).sub(smoothstep(0.75, 1.0, abs(s)));
   const tipFade = smoothstep(0.0, 0.08, abs(s));
   const rulingFade = smoothstep(0.08, 0.45, abs(s));

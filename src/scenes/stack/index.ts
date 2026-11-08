@@ -43,7 +43,7 @@ function worldImage(x: F, t: F, y: F) {
   img = img.add(dot(x, y, cos(a).mul(PLANET.r).add(STAR.x), sin(a).mul(PLANET.r).add(STAR.y), 0.07, vec3(...PAL.earth).mul(1.5)));
   img = img.add(dot(x, y, 0, 0, 0.075, vec3(...PAL.a).mul(1.5)));
   for (const b of BEACONS) {
-    const flash = exp(t.sub(b.t).div(FRAME_DT * 0.6).pow(2).negate()).mul(params.lampFlash);
+    const flash = exp(t.sub(b.t).div(FRAME_DT * 0.6).abs().pow(2).negate()).mul(params.lampFlash);
     img = img.add(dot(x, y, b.x, b.y, 0.055, vec3(...PAL.cool).mul(float(0.5).add(flash))));
   }
   return img;

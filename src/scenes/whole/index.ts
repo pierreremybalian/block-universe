@@ -95,7 +95,7 @@ function createTeardrop(kit: BlockKit) {
   const ring = float(1).sub(smoothstep(float(0), fwidth(gv).mul(1.2), abs(fract(gv.add(0.5)).sub(0.5))));
   const t = P.y;
   const shown = smoothstep(reveal.sub(0.02), reveal.add(0.02), t);
-  const front = exp(t.sub(reveal).div(0.03).pow(2).negate()).mul(smoothstep(-1.98, -1.9, reveal));
+  const front = exp(t.sub(reveal).div(0.03).abs().pow(2).negate()).mul(smoothstep(-1.98, -1.9, reveal));
   const lum = float(0.035).add(ruling.mul(0.12)).add(ring.mul(0.09)).mul(shown).add(front.mul(1.4));
   const mat = new MeshBasicNodeMaterial({
     transparent: true,

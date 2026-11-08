@@ -64,7 +64,7 @@ export function createKnife(kit: BlockKit, b: Bounds, o: KnifeOptions): KnifeShe
     const dEdge = min(min(x.sub(b.x0 - m).abs(), x.sub(b.x1 + m).abs()), min(y.sub(b.y0 - m).abs(), y.sub(b.y1 + m).abs()));
     const dT = min(tt.sub(b.t0).abs(), tt.sub(b.t1).abs());
     const d = min(dEdge, dT);
-    const edge = exp(d.div(0.012).pow(2).negate()).mul(1.4).add(exp(d.div(0.08).pow(2).negate()).mul(0.25));
+    const edge = exp(d.div(0.012).abs().pow(2).negate()).mul(1.4).add(exp(d.div(0.08).abs().pow(2).negate()).mul(0.25));
     let gridL: F = float(0);
     if (o.grid) {
       const gx = abs(fract(x.div(o.grid).add(0.5)).sub(0.5));

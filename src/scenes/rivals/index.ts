@@ -59,7 +59,7 @@ function createOutline() {
   });
   const p = uv().sub(0.5).mul(2);
   const d = min(aspect.sub(p.x.abs().mul(aspect)), float(1).sub(p.y.abs()));
-  const line = exp(d.mul(220).pow(2).negate());
+  const line = exp(d.mul(220).abs().pow(2).negate());
   mat.colorNode = vec4(vec3(0.62, 0.68, 0.9).mul(line).mul(glow), 1);
   const quad = new Mesh(new PlaneGeometry(2, 2), mat);
   scene.add(quad);

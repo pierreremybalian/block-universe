@@ -74,10 +74,10 @@ export function createFilmStack(
   const t = A.z;
   const sp = vec3(x, t, y);
   const exists = float(1).sub(smoothstep(reveal.sub(0.02), reveal.add(0.02), t));
-  const near = exp(t.sub(highlight).div(max(float(0.001), float((t1 - t0) / Math.max(1, n - 1)).mul(0.7))).pow(2).negate());
+  const near = exp(t.sub(highlight).div(max(float(0.001), float((t1 - t0) / Math.max(1, n - 1)).mul(0.7))).abs().pow(2).negate());
   const ex = min(abs(A.x), abs(float(1).sub(A.x))).mul(b.x1 - b.x0);
   const ey = min(abs(A.y), abs(float(1).sub(A.y))).mul(b.y1 - b.y0);
-  const edge = exp(min(ex, ey).div(0.012).pow(2).negate());
+  const edge = exp(min(ex, ey).div(0.012).abs().pow(2).negate());
   const img = o.imageFn(x, t, y).mul(imageGain).mul(float(0.55).add(near.mul(1.2)));
   const col = img.add(edgeColour.mul(edge.mul(edgeGain).mul(float(0.25).add(near.mul(1.2)))));
   const mat = new MeshBasicNodeMaterial({ transparent: true, depthWrite: false, blending: AdditiveBlending, side: DoubleSide });

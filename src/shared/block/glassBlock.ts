@@ -51,7 +51,7 @@ export function createGlassBlock(kit: BlockKit, b: Bounds, o: { grid?: number; g
   const et = min(t.sub(b.t0).abs(), t.sub(b.t1).abs());
   const ey = min(y.sub(b.y0).abs(), y.sub(b.y1).abs());
   const nearEdge = min(min(max(ex, et), max(ex, ey)), max(et, ey));
-  const soft = exp(nearEdge.div(0.16).pow(2).negate());
+  const soft = exp(nearEdge.div(0.16).abs().pow(2).negate());
   const exist = kit.existence(sp).mul(0.6).add(0.4);
   const mat = new MeshBasicNodeMaterial({ transparent: true, depthWrite: false, blending: AdditiveBlending, side: DoubleSide });
   mat.positionNode = kit.toView(sp);
