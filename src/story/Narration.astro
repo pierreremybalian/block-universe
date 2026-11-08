@@ -316,16 +316,36 @@ const pad = (n: number) => String(n).padStart(2, '0');
         linear-gradient(0deg, rgb(2 2 5 / 0.75), rgb(2 2 5 / 0) 50svh),
         linear-gradient(rgb(2 2 5 / 0.5), rgb(2 2 5 / 0) 6rem);
     }
+    /* Phones: the stage line on one row, the dual clock left-aligned under it, nothing wraps. */
     .top {
       top: 0.9rem;
       left: 1rem;
       right: 1rem;
-      gap: 0.75rem;
+      flex-direction: column;
+      gap: 0.55rem;
     }
     .stage {
-      flex-direction: column;
-      gap: 0.25rem;
-      font-size: 0.6rem;
+      gap: 0.2rem 0.7rem;
+      font-size: 0.58rem;
+    }
+    .stage .name {
+      max-width: 15rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dual {
+      justify-content: start;
+      text-align: left;
+      column-gap: 0.7rem;
+      row-gap: 0.15rem;
+    }
+    .dual :global(dt) {
+      justify-content: flex-start;
+      white-space: nowrap;
+    }
+    .dual :global(dd) {
+      white-space: nowrap;
     }
     .dual :global(dd) {
       font-size: 0.9rem;
