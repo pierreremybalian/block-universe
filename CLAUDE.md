@@ -1,6 +1,6 @@
 # Block Universe
 
-Scroll-driven 3D explanation of the block universe (eternalism): 13 stages from "time flows" to "all times exist", then the rivals. Astro 7, vanilla TypeScript islands, three.js r186 WebGPU renderer with TSL shaders (automatic WebGL2 fallback), nanostores, Lenis. Static output on Cloudflare Workers static assets at https://block-universe.balian.dev (`pnpm deploy`). Infrastructure inherited from Cosmic History (`../universe`). `HANDOFF.md` is the spec; `DECISIONS.md` logs deviations; `SCENES.md` is the scene authoring guide.
+Scroll-driven 3D explanation of the block universe (eternalism): 13 stages from "time flows" to "all times exist", then the rivals. Astro 7, vanilla TypeScript islands, three.js r186 WebGPU renderer with TSL shaders (automatic WebGL2 fallback), nanostores, Lenis. Static output on Cloudflare Workers static assets at https://block-universe.balian.dev (`pnpm run deploy`; plain `pnpm deploy` is a pnpm built-in). Infrastructure inherited from Cosmic History (`../universe`). `HANDOFF.md` is the spec; `DECISIONS.md` logs deviations; `SCENES.md` is the scene authoring guide.
 
 ## Dev
 - `pnpm dev` (port 4350). Scene harness: `/dev/scenes/?scene=<id>&local=0.5` (slider, FPS, GPU memory, load/unload ×50 leak test). `_lab` exercises every block primitive (`&mode=film|loupe`, `&split=1`).
