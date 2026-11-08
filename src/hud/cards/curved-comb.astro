@@ -1,0 +1,108 @@
+---
+// The Altitude Comb (stage 11): how much each clock gains or loses per day against one at sea level, computed by
+// src/relativity/gravity.ts. Bars diverge from zero: left = runs slow, right = runs fast.
+import { COMB } from '../../script/curved.ts';
+const max = Math.max(...COMB.map((c) => Math.abs(c.usPerDay)));
+const km = (v: number) => (v < 10 ? v.toFixed(1) : Math.round(v).toLocaleString('en-US'));
+const fmt = (v: number) =>
+  v === 0 ? '0' : `${v > 0 ? '+' : '−'}${Math.abs(v) < 1 ? Math.abs(v).toFixed(3) : Math.abs(v).toFixed(1)}`;
+---
+
+<section class="card comb" data-card="curved-comb">
+  <h3>
+    Clocks vs sea level <span>microseconds a day</span>
+  </h3>
+  <ul>
+    {COMB.map((c) => (
+      <li data-id={c.id}>
+        <span class="name">
+          {c.label}
+          <small>{km(c.altitudeKm)} km</small>
+        </span>
+        <span class="bar">
+          <i
+            class={c.usPerDay < 0 ? 'neg' : 'pos'}
+            style={`--w: ${(Math.abs(c.usPerDay) / max).toFixed(4)}; --min: ${c.usPerDay !== 0 ? '2px' : '0px'}`}
+          />
+        </span>
+        <span class="v">{fmt(c.usPerDay)}</span>
+      </li>
+    ))}
+  </ul>
+  <p class="foot">Higher runs faster; faster-moving runs slower. GPS corrects for +38.5 µs a day.</p>
+</section>
+
+<script>
+  import { curvedState } from '../../script/curved.ts';
+  import { onStage, showCard } from '../card.ts';
+  const card = document.querySelector<HTMLElement>('[data-card="curved-comb"]')!;
+  onStage((s) => showCard(card, s.stageId === 'curved' && curvedState(s.local).comb > 0.5));
+</script>
+
+<style>
+  ul {
+    margin-top: 0.7rem;
+    display: grid;
+    gap: 0.45rem;
+  }
+  li {
+    display: grid;
+    grid-template-columns: 7.2rem 1fr 3.4rem;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .name {
+    display: grid;
+    font-size: 0.74rem;
+    color: var(--color-paper);
+    line-height: 1.15;
+  }
+  .name small {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    color: var(--color-mute);
+  }
+  .bar {
+    position: relative;
+    height: 6px;
+  }
+  .bar::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -4px;
+    bottom: -4px;
+    width: 1px;
+    background: rgb(255 255 255 / 0.25);
+  }
+  .bar i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: max(var(--min), calc(var(--w) * 50%));
+    border-radius: 2px;
+  }
+  .bar i.pos {
+    left: 50%;
+    background: var(--color-obs-b);
+    box-shadow: 0 0 8px rgb(82 203 255 / 0.5);
+  }
+  .bar i.neg {
+    right: 50%;
+    background: var(--color-obs-a);
+    box-shadow: 0 0 8px rgb(255 160 74 / 0.5);
+  }
+  .v {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-paper);
+  }
+  .foot {
+    margin-top: 0.6rem;
+    font-size: 0.68rem;
+    line-height: 1.4;
+    color: var(--color-mute);
+  }
+</style>
