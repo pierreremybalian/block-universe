@@ -14,6 +14,8 @@ export interface StageMeta {
   /** One sentence shown on the stage's intro card. */
   note: string;
   readouts(local: number): Readout[];
+  /** Panel dividers drawn by the HUD (0–1 opacity): v = centre vertical line (diptych), h = centre horizontal (quadtych). */
+  dividers?(local: number): { v: number; h: number };
 }
 
 const REGISTRY: Record<string, StageMeta> = {};
@@ -29,4 +31,8 @@ export function readouts(stageId: string, local: number): Readout[] {
 
 export function stageNote(stageId: string): string {
   return REGISTRY[stageId]?.note ?? '';
+}
+
+export function stageDividers(stageId: string, local: number): { v: number; h: number } {
+  return REGISTRY[stageId]?.dividers?.(local) ?? { v: 0, h: 0 };
 }

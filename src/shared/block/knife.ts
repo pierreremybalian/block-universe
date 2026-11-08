@@ -4,7 +4,7 @@
 // evaluated on the plane (the Rolling Shutter).
 
 import { AdditiveBlending, DoubleSide, Mesh, MeshBasicNodeMaterial, PlaneGeometry, Color } from 'three/webgpu';
-import { Discard, Fn, If, abs, exp, float, fract, fwidth, min, positionLocal, smoothstep, uniform, vec3, vec4 } from 'three/tsl';
+import { Discard, Fn, If, abs, exp, float, fract, fwidth, min, attribute, smoothstep, uniform, vec3, vec4 } from 'three/tsl';
 import type { Node } from 'three/webgpu';
 import type { BlockKit, FloatU, ColorU } from './kit.ts';
 import type { Bounds } from './glassBlock.ts';
@@ -45,8 +45,10 @@ export function createKnife(kit: BlockKit, b: Bounds, o: KnifeOptions): KnifeShe
   const m = o.margin ?? 0;
 
   // PlaneGeometry spans [-0.5, 0.5] in local x/y. Map to the block's x and (spatial) y, and lift to t = βx + c.
-  const u = positionLocal.x.add(0.5);
-  const w = positionLocal.y.add(0.5);
+  // Raw attribute: positionLocal would be the transformed position in the fragment stage once positionNode is set.
+  const P0 = attribute<'vec3'>('position', 'vec3');
+  const u = P0.x.add(0.5);
+  const w = P0.y.add(0.5);
   const x = float(b.x0 - m).add(u.mul(b.x1 - b.x0 + 2 * m));
   const y = float(b.y0 - m).add(w.mul(b.y1 - b.y0 + 2 * m));
   const t = beta.mul(x).add(c);
@@ -71,7 +73,7 @@ export function createKnife(kit: BlockKit, b: Bounds, o: KnifeOptions): KnifeShe
       const fy = fwidth(y.div(o.grid));
       gridL = float(1).sub(smoothstep(float(0), fx.mul(1.2), gx)).max(float(1).sub(smoothstep(float(0), fy.mul(1.2), gy))).mul(0.12);
     }
-    const body = float(0.05).add(gridL);
+    const body = float(0.075).add(gridL);
     let col: V3 = colour.mul(body.add(edge));
     if (o.imageFn) col = col.add(o.imageFn(x, tt, y).mul(image));
     return vec4(col.mul(opacity), 1);

@@ -1,0 +1,177 @@
+---
+// The Reshuffle (stage 6): beacons ordered by time in A's frame (top) and in B's frame (bottom), joined by lines.
+// Spacelike pairs cross as B's speed changes; cause → effect pairs (violet) never do.
+import { BEACONS } from '../../shared/world.ts';
+---
+
+<section class="card reshuffle" data-card="reshuffle">
+  <h3>Order of events <span>earlier → later</span></h3>
+  <svg viewBox="0 0 320 132" data-reshuffle>
+    <text class="lane a" x="0" y="31">A</text>
+    <text class="lane b" x="0" y="107">B</text>
+    <line class="axis" x1="22" y1="27" x2="316" y2="27"></line>
+    <line class="axis" x1="22" y1="103" x2="316" y2="103"></line>
+    <g data-links></g>
+    <g data-causal></g>
+    <g data-chips-a>
+      {BEACONS.map((b) => (
+        <g class="chip" data-n={b.n}>
+          <circle r="9"></circle>
+          <text y="3.6">{b.n}</text>
+        </g>
+      ))}
+    </g>
+    <g data-chips-b>
+      {BEACONS.map((b) => (
+        <g class="chip" data-n={b.n}>
+          <circle r="9"></circle>
+          <text y="3.6">{b.n}</text>
+        </g>
+      ))}
+    </g>
+  </svg>
+  <p class="legend"><i class="cause"></i>cause → effect: never swaps</p>
+</section>
+
+<script>
+  import { BEACONS, CAUSAL } from '../../shared/world.ts';
+  import { betaB, frameTimes, whoseState } from '../../script/whose.ts';
+  import { onStage, showCard } from '../card.ts';
+
+  const X0 = 34;
+  const X1 = 304;
+  const YA = 27;
+  const YB = 103;
+  const NS = 'http://www.w3.org/2000/svg';
+
+  /** Smooth rank: chips glide past each other instead of jumping. */
+  function softRanks(times: number[], eps = 0.02): number[] {
+    return times.map((ti, i) => times.reduce((acc, tj, j) => (i === j ? acc : acc + 1 / (1 + Math.exp(-(ti - tj) / eps))), 0));
+  }
+
+  const card = document.querySelector<HTMLElement>('[data-card="reshuffle"]')!;
+  const svg = card.querySelector<SVGSVGElement>('[data-reshuffle]')!;
+  const chipsA = [...svg.querySelectorAll<SVGGElement>('[data-chips-a] .chip')];
+  const chipsB = [...svg.querySelectorAll<SVGGElement>('[data-chips-b] .chip')];
+  const linkG = svg.querySelector<SVGGElement>('[data-links]')!;
+  const causalG = svg.querySelector<SVGGElement>('[data-causal]')!;
+  const links = BEACONS.map(() => {
+    const l = document.createElementNS(NS, 'line');
+    l.setAttribute('class', 'link');
+    linkG.appendChild(l);
+    return l;
+  });
+  const causal = CAUSAL.flatMap(() =>
+    [0, 1].map(() => {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('class', 'causal');
+      causalG.appendChild(p);
+      return p;
+    }),
+  );
+  const tA = frameTimes(0);
+  const ranksA = softRanks(tA);
+  const n = BEACONS.length;
+  const xOf = (r: number) => X0 + ((X1 - X0) * r) / (n - 1);
+  const idx = (num: number) => BEACONS.findIndex((b) => b.n === num);
+  const arc = (x1: number, x2: number, y: number, up: boolean) => {
+    const h = up ? -14 : 14;
+    return `M${x1.toFixed(1)},${y + (up ? -9 : 9)} Q${((x1 + x2) / 2).toFixed(1)},${y + h * 1.6} ${x2.toFixed(1)},${y + (up ? -9 : 9)}`;
+  };
+
+  onStage((s) => {
+    const w = s.stageId === 'whose' ? whoseState(s.local) : null;
+    showCard(card, !!w && w.reshuffle > 0.5);
+    if (!w || w.reshuffle <= 0) return;
+    const tB = frameTimes(betaB(s.local));
+    const ranksB = softRanks(tB);
+    for (let i = 0; i < n; i++) {
+      const xa = xOf(ranksA[i]!);
+      const xb = xOf(ranksB[i]!);
+      chipsA[i]!.setAttribute('transform', `translate(${xa.toFixed(1)},${YA})`);
+      chipsB[i]!.setAttribute('transform', `translate(${xb.toFixed(1)},${YB})`);
+      const l = links[i]!;
+      l.setAttribute('x1', xa.toFixed(1));
+      l.setAttribute('y1', String(YA + 10));
+      l.setAttribute('x2', xb.toFixed(1));
+      l.setAttribute('y2', String(YB - 10));
+      const flipped = tA.some((ta, j) => j !== i && Math.sign(ta - tA[i]!) !== Math.sign(tB[j]! - tB[i]!));
+      l.classList.toggle('flip', flipped);
+    }
+    CAUSAL.forEach((c, k) => {
+      const a = idx(c.from);
+      const b = idx(c.to);
+      causal[k * 2]!.setAttribute('d', arc(xOf(ranksA[a]!), xOf(ranksA[b]!), YA, true));
+      causal[k * 2 + 1]!.setAttribute('d', arc(xOf(ranksB[a]!), xOf(ranksB[b]!), YB, false));
+    });
+  });
+</script>
+
+<style>
+  svg {
+    display: block;
+    width: 100%;
+    margin-top: 0.6rem;
+    overflow: visible;
+  }
+  .lane {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .lane.a {
+    fill: var(--color-obs-a);
+  }
+  .lane.b {
+    fill: var(--color-obs-b);
+  }
+  .axis {
+    stroke: rgb(255 255 255 / 0.12);
+    stroke-width: 1;
+  }
+  .chip circle {
+    fill: #0b0e1a;
+    stroke: var(--color-glow);
+    stroke-width: 1.2;
+  }
+  .chip text {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-anchor: middle;
+    fill: var(--color-paper);
+  }
+  [data-chips-a] .chip circle {
+    stroke: var(--color-obs-a);
+  }
+  [data-chips-b] .chip circle {
+    stroke: var(--color-obs-b);
+  }
+  .reshuffle :global(.link) {
+    stroke: rgb(255 255 255 / 0.18);
+    stroke-width: 1;
+    fill: none;
+  }
+  .reshuffle :global(.link.flip) {
+    stroke: rgb(255 240 220 / 0.55);
+  }
+  .reshuffle :global(.causal) {
+    stroke: var(--color-light);
+    stroke-width: 1.6;
+    fill: none;
+  }
+  .legend {
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    color: var(--color-mute);
+  }
+  .legend .cause {
+    width: 1rem;
+    height: 2px;
+    background: var(--color-light);
+  }
+</style>

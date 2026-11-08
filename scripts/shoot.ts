@@ -32,6 +32,18 @@ if (opt('scene')) {
     jobs.push({ url: u, out: join(outdir, `${scene}${chapter ? `-${chapter}` : ''}-${l}${webgl ? '-webgl' : ''}.png`) });
   }
 }
+// Full page inside a stage: --stage whose --at 0.2,0.5 (local positions within the stage)
+if (opt('stage')) {
+  const { stageIndex, stageToProgress } = await import('../src/time/stages.ts');
+  const id = opt('stage')!;
+  const i = stageIndex(id);
+  if (i < 0) throw new Error(`unknown stage ${id}`);
+  const outdir = opt('outdir', 'scratch/shots')!;
+  for (const l of (opt('at', '0.5') ?? '').split(',')) {
+    const p = stageToProgress(i, Number(l));
+    jobs.push({ url: `${base}/?tier=${tier}&probe=0${webgl ? '&webgl=1' : ''}#p=${p.toFixed(6)}`, out: join(outdir, `page-${id}-${l}${webgl ? '-webgl' : ''}.png`) });
+  }
+}
 // Full page at given scroll progress values: --page 0,0.25,0.5
 if (opt('page')) {
   const outdir = opt('outdir', 'scratch/shots')!;

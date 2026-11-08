@@ -59,6 +59,8 @@ export interface Ribbons {
   /** Per path: x = reveal end (0–1 along the path), y = intensity multiplier, z = reveal start, w = highlight. */
   state: Vector4[];
   set(i: number, reveal: number, intensity?: number, from?: number, highlight?: number): void;
+  /** Move path i to new points (same count). Proper time is recomputed. */
+  update(i: number, points: readonly (readonly number[])[]): void;
   /** Global multiplier. */
   opacity: FloatU;
   dispose(): void;
@@ -88,9 +90,11 @@ export function createRibbons(kit: BlockKit, paths: readonly PathSpec[]): Ribbon
   const style: number[] = [];
   const index: number[] = [];
   let base = 0;
+  const starts: number[] = [];
   paths.forEach((p, pi) => {
     const pts = p.points;
     const n = pts.length;
+    starts.push(base);
     if (n < 2) return;
     const tau = pathParams(pts, !!p.spacelike);
     for (let i = 0; i < n; i++) {
@@ -122,6 +126,10 @@ export function createRibbons(kit: BlockKit, paths: readonly PathSpec[]): Ribbon
   geo.setAttribute('aColour', new Float32BufferAttribute(colour, 4));
   geo.setAttribute('aStyle', new Float32BufferAttribute(style, 4));
   geo.setIndex(index);
+  const posAttr = geo.getAttribute('position') as Float32BufferAttribute;
+  const prevAttr = geo.getAttribute('aPrev') as Float32BufferAttribute;
+  const nextAttr = geo.getAttribute('aNext') as Float32BufferAttribute;
+  const metaAttr = geo.getAttribute('aMeta') as Float32BufferAttribute;
 
   const state = paths.map(() => new Vector4(1, 1, 0, 0));
   const uState = uniformArray(state, 'vec4');
@@ -197,6 +205,37 @@ export function createRibbons(kit: BlockKit, paths: readonly PathSpec[]): Ribbon
     opacity,
     set(i, reveal, intensity = 1, from = 0, highlight = 0) {
       state[i]!.set(reveal, intensity, from, highlight);
+    },
+    update(i, pts) {
+      const n = pts.length;
+      if (n !== paths[i]!.points.length) throw new Error('ribbon update: point count changed');
+      const tau = pathParams(pts, !!paths[i]!.spacelike);
+      const P = posAttr.array as Float32Array;
+      const A = prevAttr.array as Float32Array;
+      const N = nextAttr.array as Float32Array;
+      const M = metaAttr.array as Float32Array;
+      for (let k = 0; k < n; k++) {
+        const c = pts[k]!;
+        const a = pts[Math.max(0, k - 1)]!;
+        const b = pts[Math.min(n - 1, k + 1)]!;
+        for (let sIdx = 0; sIdx < 2; sIdx++) {
+          const v = starts[i]! + k * 2 + sIdx;
+          P[v * 3] = c[0]!;
+          P[v * 3 + 1] = c[1]!;
+          P[v * 3 + 2] = c[2] ?? 0;
+          A[v * 4] = a[0]!;
+          A[v * 4 + 1] = a[1]!;
+          A[v * 4 + 2] = a[2] ?? 0;
+          N[v * 3] = b[0]!;
+          N[v * 3 + 1] = b[1]!;
+          N[v * 3 + 2] = b[2] ?? 0;
+          M[v * 4 + 1] = tau[k]!;
+        }
+      }
+      posAttr.needsUpdate = true;
+      prevAttr.needsUpdate = true;
+      nextAttr.needsUpdate = true;
+      metaAttr.needsUpdate = true;
     },
     dispose() {
       geo.dispose();

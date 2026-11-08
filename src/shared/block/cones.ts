@@ -57,7 +57,7 @@ export function createLightCone(kit: BlockKit, o: { rings?: number; rulings?: nu
   const r = abs(s).mul(height);
   const sp = apex.add(vec3(cos(th).mul(r), s.mul(height), sin(th).mul(r)));
 
-  const nR = o.rulings ?? 24;
+  const nR = o.rulings ?? 16;
   const ruling = abs(fract(a.x.mul(nR).add(0.5)).sub(0.5));
   const rulingL = float(1).sub(smoothstep(float(0), fwidth(a.x.mul(nR)).mul(1.2), ruling));
   const ringsN = o.rings ?? 6;
@@ -67,8 +67,9 @@ export function createLightCone(kit: BlockKit, o: { rings?: number; rulings?: nu
   const lim = step(s, future.add(1e-4)).mul(step(past.negate().sub(1e-4), s));
   const front = max(exp(s.sub(future).div(0.012).pow(2).negate()).mul(step(future, 0.999)), exp(s.add(past).div(0.012).pow(2).negate()).mul(step(past, 0.999)));
   const endFade = float(1).sub(smoothstep(0.75, 1.0, abs(s)));
-  const tipFade = smoothstep(0.0, 0.04, abs(s));
-  const lum = float(0.03).add(rulingL.mul(0.16)).add(ringL.mul(0.1)).mul(endFade).add(front.mul(1.6)).mul(tipFade);
+  const tipFade = smoothstep(0.0, 0.08, abs(s));
+  const rulingFade = smoothstep(0.08, 0.45, abs(s));
+  const lum = float(0.035).add(rulingL.mul(0.14).mul(rulingFade)).add(ringL.mul(0.1)).mul(endFade).add(front.mul(1.6)).mul(tipFade);
   const mat = new MeshBasicNodeMaterial({ transparent: true, depthWrite: false, blending: AdditiveBlending, side: DoubleSide });
   mat.positionNode = kit.toView(sp);
   mat.colorNode = vec4(colour.mul(lum).mul(lim).mul(opacity), 1);

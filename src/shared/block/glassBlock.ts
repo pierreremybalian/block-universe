@@ -2,7 +2,7 @@
 // when the block is viewed in another frame), and bright edges.
 
 import { AdditiveBlending, BoxGeometry, DoubleSide, Mesh, MeshBasicNodeMaterial, Color } from 'three/webgpu';
-import { abs, exp, float, fract, fwidth, max, min, positionLocal, smoothstep, uniform, vec3, vec4 } from 'three/tsl';
+import { abs, exp, float, fract, fwidth, max, min, attribute, smoothstep, uniform, vec3, vec4 } from 'three/tsl';
 import type { Node } from 'three/webgpu';
 import type { BlockKit, FloatU, ColorU } from './kit.ts';
 import { createRibbons, type Ribbons } from './ribbons.ts';
@@ -33,9 +33,11 @@ export function createGlassBlock(kit: BlockKit, b: Bounds, o: { grid?: number; g
   const gridOpacity = uniform(1);
   const tc = o.tint ?? PAL.edge;
   const tint = uniform(new Color(tc[0], tc[1], tc[2]));
-  const x = float(b.x0).add(positionLocal.x.add(0.5).mul(b.x1 - b.x0));
-  const t = float(b.t0).add(positionLocal.y.add(0.5).mul(b.t1 - b.t0));
-  const y = float(b.y0).add(positionLocal.z.add(0.5).mul(b.y1 - b.y0));
+  // Raw attribute: positionLocal would be the transformed position in the fragment stage once positionNode is set.
+  const P0 = attribute<'vec3'>('position', 'vec3');
+  const x = float(b.x0).add(P0.x.add(0.5).mul(b.x1 - b.x0));
+  const t = float(b.t0).add(P0.y.add(0.5).mul(b.t1 - b.t0));
+  const y = float(b.y0).add(P0.z.add(0.5).mul(b.y1 - b.y0));
   const sp = vec3(x, t, y);
   const gx = o.grid ?? 1;
   const gt = o.gridT ?? gx;
