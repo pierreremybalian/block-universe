@@ -17,6 +17,10 @@ import { S, TRIP, TURN_YEARS, clocks, clocksState, travelerAge, travelerAtAge, t
 import { smoother } from '../../time/tracks.ts';
 
 const HOME_T = TRIP.homeYears * S;
+const smooth01 = (x: number) => {
+  const c = Math.min(1, Math.max(0, x));
+  return c * c * (3 - 2 * c);
+};
 const PROX_X = PROXIMA_LY * S;
 const AGES = Math.floor(TRIP.travelerYears);
 const THREAD_N = 64;
@@ -49,11 +53,11 @@ export default function clocksScene(): BlockScene {
     { id: 'home', text: 'Home twin', tone: 'a', side: 'left' },
     { id: 'trav', text: 'Traveler · 0.8 c', tone: 'b', side: 'right' },
     { id: 'turn', text: 'Turnaround', tone: 'mute', side: 'right', size: 'sm' },
-    { id: 'reunion', text: 'Reunion', tone: 'both', side: 'left', size: 'sm' },
+    { id: 'reunion', text: 'Reunion', tone: 'both', side: 'right', size: 'sm' },
     { id: 'beads', text: 'one bead = one year on that clock', tone: 'warm', side: 'right', size: 'sm' },
     { id: 'homeLen', text: `${TRIP.homeYears.toFixed(1)} years`, tone: 'a', side: 'left' },
     { id: 'travLen', text: `${TRIP.travelerYears.toFixed(1)} years`, tone: 'b', side: 'right' },
-    { id: 'straight', text: 'straight path: longest time', tone: 'both', side: 'left', size: 'sm' },
+    { id: 'straight', text: 'straight path: longest time', tone: 'both', side: 'right', size: 'sm' },
   ]);
   const L = Object.fromEntries(labels.specs.map((s, i) => [s.id, i])) as Record<string, number>;
 
@@ -142,13 +146,15 @@ export default function clocksScene(): BlockScene {
       const sp = smoother(s.spool);
 
       ribbons.set(P.home, Math.max(0.0005, f), 1);
-      ribbons.set(P.trav, Math.max(0.0005, f), 1 - 0.55 * sp);
+      // The bent original fades as its copy unwinds, so there is only one bright V on screen.
+      const unwound = smooth01(sp / 0.3);
+      ribbons.set(P.trav, Math.max(0.0005, f), 1 - 0.78 * unwound);
       ribbons.set(P.prox, 1, s.intro);
       ribbons.set(P.dist, 1, s.intro * (1 - s.reunion * 0.6));
       for (let i = 0; i < AGES; i++) {
         const r = rungEnds[i]!;
         const appear = Math.min(1, Math.max(0, (tY - r.tTrav) / 0.35));
-        ribbons.set(P.rung0 + i, 1, appear * s.ladder * (1 - 0.7 * sp));
+        ribbons.set(P.rung0 + i, 1, appear * s.ladder * (1 - smooth01(sp / 0.35)));
       }
       // The Spool: interpolate the traveler's path into a straight vertical thread of its own proper time.
       for (let i = 0; i < THREAD_N; i++) {
@@ -218,14 +224,16 @@ export default function clocksScene(): BlockScene {
     place(L.home!, 0, tY * S, 0, journey);
     place(L.trav!, travelerX(tY) * S, tY * S, 0, journey);
     place(L.turn!, PROX_X, TURN_YEARS * S, 0, tY >= TURN_YEARS ? s.ladder : 0);
-    place(L.reunion!, 0, HOME_T, 0, tY >= TRIP.homeYears - 0.01 ? Math.max(0, 1 - sp * 3) : 0);
+    place(L.reunion!, 0, HOME_T, 0, tY >= TRIP.homeYears - 0.01 ? 1 - smooth01(sp / 0.15) : 0);
     // Point at the traveler's second bead while the ladder is being built.
     const b2 = rungEnds[1]!;
     place(L.beads!, b2.x, b2.t, 0, tY > rungEnds[2]!.tTrav && tY < TRIP.homeYears * 0.92 ? s.ladder : 0);
-    const late = Math.max(0, (sp - 0.75) / 0.25);
+    // The Spool's two labelled lengths, once the thread has mostly unwound (rungs are gone by then).
+    const late = smooth01((sp - 0.55) / 0.3);
     place(L.homeLen!, 0, HOME_T, 0, late);
     place(L.travLen!, params.threadX, TRIP.travelerYears * S, 0, late);
-    place(L.straight!, 0, HOME_T * 0.62, 0, late * (1 - s.measured));
+    // Under the traveler's length; on phones the caption carries it instead (no room beside the block).
+    place(L.straight!, params.threadX, TRIP.travelerYears * S - 0.22, 0, aspect < 0.9 ? 0 : late * (1 - s.measured));
   }
 
   return self;
