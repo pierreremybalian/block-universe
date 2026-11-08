@@ -154,14 +154,14 @@ Each stage owns a scroll span (`scrollWeight` × 80 svh). `local` ∈ [0, 1] wit
 | 3 | light | One speed for everyone | measured | 6 | dissolve |
 | 4 | clocks | Moving clocks run slow | measured | 8 | zoom |
 | 5 | ages | The bowl of equal ages | established | 6 | dissolve |
-| 6 | whose | Whose now? | established | 8 | stretch |
+| 6 | whose | Whose now? | established | 8 | dissolve |
 | 7 | shutter | A now is a rolling shutter | metaphor | 6 | dissolve |
 | 8 | andromeda | Two walkers, one galaxy | argument | 9 | zoom |
 | 9 | eternal | Everything, all at once | argument | 6 | dissolve |
 | 10 | you | Your worldline | measured | 7 | zoom |
 | 11 | curved | The block bends | measured | 8 | dissolve |
 | 12 | rivals | Is it true? | open | 8 | dissolve |
-| 13 | whole | The block of everything | measured | 6 | stretch |
+| 13 | whole | The block of everything | measured | 6 | zoom |
 
 ---
 

@@ -26,14 +26,14 @@ const ROWS: Row[] = [
   ['light', 'measured', 6, 'dissolve'],
   ['clocks', 'measured', 8, 'zoom'],
   ['ages', 'established', 6, 'dissolve'],
-  ['whose', 'established', 8, 'stretch'],
+  ['whose', 'established', 8, 'dissolve'],
   ['shutter', 'metaphor', 6, 'dissolve'],
   ['andromeda', 'argument', 9, 'zoom'],
   ['eternal', 'argument', 6, 'dissolve'],
   ['you', 'measured', 7, 'zoom'],
   ['curved', 'measured', 8, 'dissolve'],
   ['rivals', 'open', 8, 'dissolve'],
-  ['whole', 'measured', 6, 'stretch'],
+  ['whole', 'measured', 6, 'zoom'],
 ];
 
 export const STAGES: readonly Stage[] = ROWS.map(([id, status, scrollWeight, transitionIn]) => ({

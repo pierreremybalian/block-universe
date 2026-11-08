@@ -74,7 +74,8 @@ export const you = registerStage('you', {
     if (s.reveal > 0.02)
       rows.push({ label: 'Life', value: `${Math.round(s.reveal * LIFE_YEARS)} years`, tone: 'plain' });
     if (s.loupe > 0.3) {
-      const age = s.loupeAge;
+      // Same decade rung the loupe labels, so the corner and the inset always quote the same number.
+      const age = Math.max(10, Math.floor(s.loupeAge / 10 + 1e-6) * 10);
       rows.push({
         label: `Head ahead of feet · age ${Math.round(age)}`,
         value: fmtUs(headAheadS(age)),

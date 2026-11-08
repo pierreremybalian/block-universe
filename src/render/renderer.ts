@@ -216,8 +216,11 @@ export async function createEngine(opts: EngineOptions): Promise<Engine | null> 
       publishInfo(mixT > 0.5 || !outgoing ? incoming : outgoing);
       const fade = Math.max(fadeFor(incoming, nowS), outgoing ? 1 : 0);
       if (labels) {
-        if (outgoing?.scene?.labels) labels.draw(outgoing.scene.labels, 1 - mixT);
-        if (incoming?.scene?.labels) labels.draw(incoming.scene.labels, (outgoing ? mixT : 1) * fadeFor(incoming, nowS));
+        // Labels don't follow the transition's distortion: clear the outgoing set early, bring the incoming set in late.
+        const outW = Math.max(0, 1 - mixT * 2.5);
+        const inW = outgoing ? smooth(Math.min(1, Math.max(0, (mixT - 0.45) / 0.55))) : 1;
+        if (outgoing?.scene?.labels) labels.draw(outgoing.scene.labels, outW);
+        if (incoming?.scene?.labels) labels.draw(incoming.scene.labels, inW * fadeFor(incoming, nowS));
       }
       compositor!.render(
         incoming?.scene ? incoming.target.texture : null,

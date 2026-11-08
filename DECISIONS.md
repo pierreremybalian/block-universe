@@ -13,6 +13,7 @@ Non-obvious choices, deviations from HANDOFF.md, and why. Newest at the bottom o
 - **Decided up front** (Cosmic History owner feedback): a guided walkthrough with one caption at a time, no rail, no sliders, no quality picker. Quality is automatic.
 - **Status replaces accuracy**: measured / established / argument / open / metaphor, because the subject mixes experiments, consequences of theory and philosophy. The intro card shows the stage's status and a one-sentence note (from its script, rendered statically so it is also in the HTML).
 - **Dual clock** replaces the cosmic clock in the top-right: each stage script publishes the comparison it is making (readouts), computed from the same function the scene uses.
+- **Transitions**: no `stretch` (it smeared thin lines into streaks); stage 6 dissolves in, stage 13 zooms out to cosmic scale. Labels do not follow a transition's distortion, so the outgoing set clears in the first 40% of the blend and the incoming set arrives in the second half.
 - **Labels are HTML** anchored to 3D points (`LabelSet` → `LabelLayer`), faded with the transition mix, so the canvas never carries text.
 - **Appendix** adds "What has been measured" (experiments.json) and "Who argued what" (positions.json) to Cosmic History's stage-by-stage notes.
 
