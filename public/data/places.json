@@ -1,0 +1,72 @@
+[
+  {
+    "id": "moon",
+    "name": "Moon",
+    "distance_ly": 4.06311e-08,
+    "note": "Mean distance 384,400 km.",
+    "source": {
+      "label": "NASA Moon Fact Sheet",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html"
+    }
+  },
+  {
+    "id": "sun",
+    "name": "Sun",
+    "distance_ly": 1.58125e-05,
+    "note": "One astronomical unit, 149,597,870,700 m (IAU 2012).",
+    "source": {
+      "label": "IAU 2012 Resolution B2",
+      "url": "https://www.iau.org/static/resolutions/IAU2012_English.pdf"
+    }
+  },
+  {
+    "id": "proxima",
+    "name": "Proxima Centauri",
+    "distance_ly": 4.2465,
+    "note": "Nearest star to the Sun.",
+    "source": {
+      "label": "NASA: Proxima Centauri b",
+      "url": "https://science.nasa.gov/exoplanet-catalog/proxima-centauri-b/"
+    }
+  },
+  {
+    "id": "galactic-centre",
+    "name": "Galactic Centre",
+    "distance_ly": 26673.0,
+    "note": "8.178 kpc, GRAVITY Collaboration 2019.",
+    "source": {
+      "label": "GRAVITY Collaboration 2019, A&A 625, L10",
+      "url": "https://doi.org/10.1051/0004-6361/201935656"
+    }
+  },
+  {
+    "id": "lmc",
+    "name": "Large Magellanic Cloud",
+    "distance_ly": 161700.0,
+    "note": "49.59 kpc, Pietrzyński et al. 2019.",
+    "source": {
+      "label": "Pietrzyński et al. 2019, Nature 567, 200",
+      "url": "https://doi.org/10.1038/s41586-019-0999-4"
+    }
+  },
+  {
+    "id": "andromeda",
+    "name": "Andromeda",
+    "distance_ly": 2500000,
+    "note": "Rounded; measurements range from about 2.48 to 2.55 million light-years (761–783 kpc).",
+    "source": {
+      "label": "McConnachie 2012, AJ 144, 4",
+      "url": "https://doi.org/10.1088/0004-6256/144/1/4"
+    }
+  },
+  {
+    "id": "virgo",
+    "name": "Virgo Cluster",
+    "distance_ly": 53800000.0,
+    "note": "16.5 Mpc, Mei et al. 2007.",
+    "source": {
+      "label": "Mei et al. 2007, ApJ 655, 144",
+      "url": "https://doi.org/10.1086/509598"
+    }
+  }
+]

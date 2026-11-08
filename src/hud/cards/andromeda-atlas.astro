@@ -1,0 +1,113 @@
+---
+// Atlas of Elsewhere (stage 8): for places from the Moon to the Virgo Cluster, the window of moments that someone
+// passing through here-now could call "now" there (± the light-travel time), and how far a brisk walk shifts it.
+// All values computed from src/relativity via the stage script.
+import places from '../../../public/data/places.json';
+import { atlasRows } from '../../script/andromeda.ts';
+const rows = atlasRows(places);
+---
+
+<section class="card atlas" data-card="atlas">
+  <h3>Atlas of elsewhere <span>from here-now</span></h3>
+  <table>
+    <thead>
+      <tr><th>Place</th><th>Possible nows</th><th>A walk shifts it</th></tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((r) => (
+          <tr data-row={r.id} class={r.id === 'andromeda' ? 'hl' : undefined}>
+            <td>{r.name}</td>
+            <td class="w">{r.nowWidth}</td>
+            <td class="k">{r.walkShift}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p class="legend">Any moment within ± the light-travel time is “now” for someone passing you at some speed.</p>
+</section>
+
+<script>
+  import { andromedaState } from '../../script/andromeda.ts';
+  import { onStage, showCard } from '../card.ts';
+  const card = document.querySelector<HTMLElement>('[data-card="atlas"]')!;
+  onStage((s) => showCard(card, s.stageId === 'andromeda' && andromedaState(s.local).atlas > 0.5));
+</script>
+
+<style>
+  .card.atlas {
+    width: 27rem;
+  }
+  th + th,
+  td + td {
+    padding-left: 1rem;
+  }
+  th,
+  td.w,
+  td.k {
+    white-space: nowrap;
+  }
+  table {
+    width: 100%;
+    margin-top: 0.6rem;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+  }
+  th {
+    padding: 0 0 0.35rem;
+    text-align: right;
+    font-weight: 400;
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+  td {
+    padding: 0.22rem 0;
+    text-align: right;
+    color: var(--color-fog);
+    border-top: 1px solid rgb(255 255 255 / 0.06);
+  }
+  td:first-child {
+    font-family: var(--font-sans);
+    font-size: 0.74rem;
+    color: var(--color-paper);
+  }
+  td.w {
+    color: var(--color-light);
+  }
+  tr.hl td {
+    color: var(--color-paper);
+    background: linear-gradient(90deg, rgb(173 151 255 / 0.12), rgb(173 151 255 / 0));
+  }
+  tr.hl td.w {
+    color: #d8ccff;
+  }
+  .legend {
+    margin-top: 0.55rem;
+    font-size: 0.66rem;
+    line-height: 1.45;
+    color: var(--color-mute);
+  }
+  @media (max-width: 767px) {
+    .card.atlas {
+      width: min(19rem, calc(100vw - 2rem));
+    }
+    table {
+      font-size: 0.6rem;
+    }
+    td:first-child {
+      font-size: 0.64rem;
+    }
+    .legend {
+      display: none;
+    }
+  }
+</style>
