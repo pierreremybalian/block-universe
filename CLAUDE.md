@@ -5,7 +5,7 @@ Scroll-driven 3D explanation of the block universe (eternalism): 13 stages from 
 ## Dev
 - `pnpm dev` (port 4350). Scene harness: `/dev/scenes/?scene=<id>&local=0.5` (slider, FPS, GPU memory, load/unload ×50 leak test). `_lab` exercises every block primitive (`&mode=film|loupe`, `&split=1`).
 - `pnpm test`, `pnpm check` and `pnpm lint` must pass before anything is done. `pnpm build` also writes `dist/_headers`.
-- Screenshots: `node scripts/shoot.ts --scene <id> --locals 0.1,0.5,0.9 --outdir scratch/shots` (`--webgl`, `--leak`); full page inside a stage: `node scripts/shoot.ts --stage <id> --at 0.3,0.7`. Stills: `pnpm stills` (needs a running dev or preview server).
+- Screenshots: `node scripts/shoot.ts --scene <id> --locals 0.1,0.5,0.9 --outdir scratch/shots` (`--webgl`, `--leak`); full page inside a stage: `node scripts/shoot.ts --stage <id> --at 0.3,0.7` (`--width 390 --height 844` for phones). Stills and the OG image: `pnpm stills` (needs a running dev or preview server). Relative scene cost: `node scripts/fps.ts`.
 
 ## Rules
 - `src/relativity/`, `src/physics/`, `src/time/` and `src/script/` are pure TypeScript: no DOM, no three. Node runs them directly.
