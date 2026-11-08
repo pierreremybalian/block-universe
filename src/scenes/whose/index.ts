@@ -226,7 +226,7 @@ export default function whoseScene(): BlockScene {
     };
     place(L.A, 0, WORLD.t1, 0, 1, left);
     place(L.here, 0, 0, 0, 1 - s.reshuffle * 0.5, left);
-    place(L.nowA, WORLD.x0, s.knifeA, WORLD.y1, s.knifeAOn, left);
+    place(L.nowA, WORLD.x0, s.knifeA, WORLD.y1, s.knifeAOn * (1 - k), left);
     place(L.B, s.beta * WORLD.t1, WORLD.t1, 0, s.bLine * (split ? 0 : 1), left);
     place(L.nowB, WORLD.x1, s.beta * WORLD.x1, WORLD.y1, s.knifeBOn * (split ? 0 : 1), left);
     BEACONS.forEach((b) => place(labels.index(`b${b.n}`), b.x, b.t, b.y, 0.85, left));

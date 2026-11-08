@@ -14,7 +14,21 @@ const base = opt('base', 'http://localhost:4350')!;
 const only = opt('only')?.split(',');
 const webgl = args.includes('--webgl');
 /** Where in each chapter the still is taken (most representative frame). */
-const AT: Record<string, number> = {};
+const AT: Record<string, number> = {
+  flow: 0.6,
+  stack: 0.85,
+  light: 0.62,
+  clocks: 0.7,
+  ages: 0.66,
+  whose: 0.55,
+  shutter: 0.74,
+  andromeda: 0.5,
+  eternal: 0.62,
+  you: 0.58,
+  curved: 0.38,
+  rivals: 0.5,
+  whole: 0.98,
+};
 
 mkdirSync(new URL('../public/stills/', import.meta.url), { recursive: true });
 const browser = await chromium.launch({
@@ -64,12 +78,30 @@ for (let i = 0; i < CHAPTERS.length; i++) {
   console.log(`stills/${c.id}.webp  ${(webp.length / 1024).toFixed(0)} KB`);
 }
 
-// Open Graph image: the title card over the opening frame.
+// Open Graph image: the Two Knives (stage 6) with the title set over it in the site's fonts.
 if (!only || only.includes('og')) {
   const og = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
-  await og.goto(`${base}/?clean=hero&tier=high&probe=0${webgl ? '&webgl=1' : ''}`);
+  await og.goto(`${base}/?clean=1&tier=high&probe=0${webgl ? '&webgl=1' : ''}`);
   await og.waitForFunction('!!window.__driver && !!window.__engine', null, { timeout: 60000 });
-  const png = await capture(og, 0, 6000);
+  const i = CHAPTERS.findIndex((c) => c.id === 'whose');
+  const p = CHAPTER_STARTS[i]! + (CHAPTER_STARTS[i + 1]! - CHAPTER_STARTS[i]!) * 0.97;
+  await og.evaluate(
+    (pp) => (window as unknown as { __driver: { scrollToProgress(p: number, o: object): void } }).__driver.scrollToProgress(pp, { immediate: true }),
+    p,
+  );
+  await og.waitForTimeout(6000);
+  await og.evaluate(() => {
+    const d = document.createElement('div');
+    d.style.cssText =
+      'position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 64px 64px;background:linear-gradient(90deg,rgb(2 2 5/.86),rgb(2 2 5/.55) 34%,rgb(2 2 5/0) 58%);';
+    d.innerHTML =
+      '<p style="font:500 13px var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:#ffd9a0">13 stages · relativity · philosophy of time</p>' +
+      '<h1 style="margin-top:10px;font:300 92px/0.95 var(--font-serif);letter-spacing:-.03em;color:#eef0fa">Block<br>Universe</h1>' +
+      '<p style="margin-top:18px;max-width:430px;font:400 21px/1.4 var(--font-serif);font-style:italic;color:#c9cfe6">Is the future already there? Two observers, two “nows”, one block of spacetime.</p>';
+    document.body.appendChild(d);
+  });
+  await og.waitForTimeout(400);
+  const png = await og.screenshot({ type: 'png' });
   writeFileSync(new URL('../public/og.png', import.meta.url), png);
   console.log(`og.png  ${(png.length / 1024).toFixed(0)} KB`);
 }
