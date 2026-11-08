@@ -14,4 +14,4 @@ pnpm build        # static site in dist/
 - Stages and scripts: `src/time/stages.ts`, `src/script/<stage>.ts`.
 - Rendering: `src/render/` (inherited from Cosmic History), block library in `src/shared/block/`, scenes in `src/scenes/`.
 
-Companion piece: [Cosmic History](https://cosmic-history.balian.dev). Live: https://block-universe.balian.dev. Deploy: `pnpm deploy`.
+Companion piece: [Cosmic History](https://cosmic-history.balian.dev). Live: https://block-universe.balian.dev. Deploy: `pnpm deploy` (builds, then `wrangler deploy` to Workers static assets on the Cloudflare account that owns `balian.dev`; the custom domain is attached by `wrangler.toml`; put `CLOUDFLARE_ACCOUNT_ID=<id>` in a gitignored `.env` first).
