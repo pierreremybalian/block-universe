@@ -1,0 +1,71 @@
+---
+// Stage 4: the measured side of time dilation. Values computed in src/relativity (muon, GPS) or quoted as measured
+// data (Hafele–Keating) from src/script/clocks.ts.
+import { GPS, HAFELE_KEATING as HK, MUON } from '../../script/clocks.ts';
+const sign = (v: number, d = 1) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(d)}`;
+---
+
+<section class="card clocks-measured" data-card="clocks-measured">
+  <h3>Measured <span>moving clocks</span></h3>
+  <ul>
+    <li>
+      <p class="what">Muons in CERN’s storage ring, 1977</p>
+      <p class="val">
+        live <b>{MUON.measuredUs.toFixed(1)} µs</b> instead of {MUON.restUs.toFixed(1)} µs <span>predicted {MUON.predictedUs.toFixed(1)} µs</span>
+      </p>
+    </li>
+    <li>
+      <p class="what">GPS satellite clocks, every day</p>
+      <p class="val">
+        <b>{sign(GPS.net)} µs</b> a day <span>speed {sign(GPS.sr)}, height {sign(GPS.gr)}</span>
+      </p>
+    </li>
+    <li>
+      <p class="what">Atomic clocks flown around the world, 1971</p>
+      <p class="val">
+        east <b>{sign(HK.east.measured, 0)} ns</b>, west <b>{sign(HK.west.measured, 0)} ns</b>
+        <span>predicted {sign(HK.east.predicted, 0)} and {sign(HK.west.predicted, 0)}</span>
+      </p>
+    </li>
+  </ul>
+</section>
+
+<script>
+  import { clocksState } from '../../script/clocks.ts';
+  import { onStage, showCard } from '../card.ts';
+  const card = document.querySelector<HTMLElement>('[data-card="clocks-measured"]')!;
+  onStage((s) => showCard(card, s.stageId === 'clocks' && clocksState(s.local).measured > 0.5));
+</script>
+
+<style>
+  ul {
+    margin-top: 0.7rem;
+    display: grid;
+    gap: 0.7rem;
+  }
+  .what {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .val {
+    margin-top: 0.2rem;
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    line-height: 1.35;
+    color: var(--color-fog);
+  }
+  .val b {
+    font-weight: 500;
+    color: var(--color-st-measured);
+  }
+  .val span {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    color: var(--color-mute);
+  }
+</style>
