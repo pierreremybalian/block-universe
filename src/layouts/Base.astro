@@ -25,6 +25,7 @@ const analytics = import.meta.env.PROD && !noindex;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content={SITE.themeColor} />
     <meta name="color-scheme" content="dark" />
     <meta
@@ -59,7 +60,13 @@ const analytics = import.meta.env.PROD && !noindex;
       url: canonical.toString(),
       image: og.toString(),
       inLanguage: 'en',
-      about: { '@type': 'Thing', name: 'History of the universe' },
+      about: [
+        { '@type': 'Thing', name: 'Block universe (eternalism)', sameAs: 'https://en.wikipedia.org/wiki/Eternalism_(philosophy_of_time)' },
+        { '@type': 'Thing', name: 'Relativity of simultaneity', sameAs: 'https://en.wikipedia.org/wiki/Relativity_of_simultaneity' },
+        { '@type': 'Thing', name: 'Spacetime', sameAs: 'https://en.wikipedia.org/wiki/Spacetime' },
+        { '@type': 'Thing', name: 'Philosophy of space and time', sameAs: 'https://en.wikipedia.org/wiki/Philosophy_of_space_and_time' },
+      ],
+      keywords: 'block universe, eternalism, presentism, growing block, special relativity, relativity of simultaneity, time dilation, light cone, Rietdijk–Putnam argument, Andromeda paradox',
       author: { '@type': 'Organization', name: SITE.author },
       publisher: { '@type': 'Organization', name: SITE.author },
     })} />
