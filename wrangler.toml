@@ -1,10 +1,10 @@
-# Static site on Cloudflare Workers (static assets). Pages projects now deploy through Workers (DECISIONS.md).
-name = "cosmic-history"
+# Static site on Cloudflare Workers (static assets), same setup as Cosmic History (DECISIONS.md).
+name = "block-universe"
 compatibility_date = "2026-10-01"
 workers_dev = false
 preview_urls = false
 
-routes = [{ pattern = "cosmic-history.balian.dev", custom_domain = true }]
+routes = [{ pattern = "block-universe.balian.dev", custom_domain = true }]
 
 [assets]
 directory = "./dist"

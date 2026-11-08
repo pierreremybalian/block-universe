@@ -11,6 +11,9 @@ import { createLightCone } from '../../shared/block/cones.ts';
 import { createBowls } from '../../shared/block/bowl.ts';
 import { OrbitRig } from '../../shared/block/rig.ts';
 import { renderPanels } from '../../shared/block/panels.ts';
+import { createLoupe } from '../../shared/block/loupe.ts';
+import { createFilmStack, dot } from '../../shared/block/filmStack.ts';
+import { vec3, sin, cos } from 'three/tsl';
 import { LabelSet } from '../../shared/block/labels.ts';
 import { PAL } from '../../shared/block/palette.ts';
 import { Vector3 } from 'three/webgpu';
@@ -30,6 +33,8 @@ export default function lab(): BlockScene {
   ]);
   const tmp = new Vector3();
   let split = false;
+  let mode = '';
+  const loupe = createLoupe();
 
   const self: BlockScene = {
     id: '_lab',
@@ -39,6 +44,17 @@ export default function lab(): BlockScene {
     async init(ctx: RenderContext) {
       renderer = ctx.renderer;
       split = new URLSearchParams(location.search).get('split') === '1';
+      mode = new URLSearchParams(location.search).get('mode') ?? '';
+      if (mode === 'film') {
+        const fs = createFilmStack(kit, B, {
+          frames: 14,
+          imageFn: (x, t, y) => dot(x, y, cos(t.mul(4)).mul(0.8), sin(t.mul(4)).mul(0.8), 0.12, vec3(0.3, 0.6, 1.0)).add(dot(x, y, 0, 0, 0.16, vec3(1, 0.7, 0.3))),
+        });
+        fs.reveal.value = 0.6;
+        fs.highlight.value = 0.6;
+        scene.add(fs.mesh);
+        disposers.push(fs.dispose);
+      }
       const glass = createGlassBlock(kit, B, { grid: 0.5 });
       glass.add(scene);
       disposers.push(glass.dispose);
@@ -94,6 +110,8 @@ export default function lab(): BlockScene {
       if (!split) {
         renderer.setRenderTarget(target);
         renderer.render(scene, rig.camera);
+        if (mode === 'loupe')
+          loupe.render(renderer, target, scene, rig.camera, { x: 0.66, y: 0.06, w: 0.3, h: 0.36 }, kit, { focus: [1.6, 0.4, -0.4], stretch: [3, 3, 3] });
         return;
       }
       renderPanels(
@@ -113,6 +131,7 @@ export default function lab(): BlockScene {
     },
     dispose() {
       for (const d of disposers) d();
+      loupe.dispose();
     },
   };
   return self;

@@ -9,6 +9,8 @@ import { VH_PER_WEIGHT } from '../scroll/driver.ts';
 import { HERO_END, MIN_DWELL_SVH, captionSchedule } from '../story/schedule.ts';
 import { STATUS_HELP, STATUS_LABEL, CREDITS, SITE } from '../data/site.ts';
 import { supHtml } from '../lib/sup.ts';
+import experiments from '../../public/data/experiments.json';
+import positions from '../../public/data/positions.json';
 
 const entries = await getCollection('stages');
 const byId = new Map(entries.map((e) => [e.data.id, e]));
@@ -142,6 +144,52 @@ const titles = chapters.map((ch) => ch.data.title);
           ))
         }
       </div>
+      <h3>What has been measured</h3>
+      <ul class="evidence">
+        {
+          [...experiments]
+            .sort((a, b) => a.year - b.year)
+            .map((e) => (
+              <li>
+                <p class="ev-head">
+                  <span class="ev-year">{e.year}</span>
+                  <span class="ev-name">{e.name}</span>
+                </p>
+                <p class="ev-tested">{e.tested}</p>
+                <p class="ev-result" set:html={supHtml(e.result)} />
+                <p class="ev-src">
+                  {e.sources.map((s, k) => (
+                    <>
+                      {k > 0 && ' · '}
+                      <a href={s.url} rel="noopener" target="_blank">
+                        {s.label}
+                      </a>
+                    </>
+                  ))}
+                </p>
+              </li>
+            ))
+        }
+      </ul>
+      <h3>Who argued what</h3>
+      <ul class="evidence positions">
+        {positions.map((p) => (
+          <li data-camp={p.camp}>
+            <p class="ev-head">
+              <span class="ev-year">{p.year}</span>
+              <span class="ev-name">{p.who}</span>
+            </p>
+            <p class="ev-tested">{p.claim}</p>
+            <p class="ev-src">
+              {p.sources.map((s) => (
+                <a href={s.url} rel="noopener" target="_blank">
+                  {s.label}
+                </a>
+              ))}
+            </p>
+          </li>
+        ))}
+      </ul>
       <h3>How sure are we?</h3>
       <dl class="acc">
         {(Object.keys(STATUS_LABEL) as (keyof typeof STATUS_LABEL)[]).map((k) => (
@@ -426,6 +474,54 @@ const titles = chapters.map((ch) => ch.data.title);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--st);
+  }
+  .evidence {
+    margin-top: 0.9rem;
+    display: grid;
+    gap: 1.1rem;
+    border-left: 1px solid var(--color-line);
+    padding-left: 1.1rem;
+  }
+  .ev-head {
+    display: flex;
+    gap: 0.8rem;
+    align-items: baseline;
+  }
+  .ev-year {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-glow);
+  }
+  .ev-name {
+    font-family: var(--font-serif);
+    font-size: 1.12rem;
+    color: var(--color-paper);
+  }
+  .ev-tested {
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+  .ev-result {
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-st-measured);
+  }
+  .ev-src {
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+  .positions [data-camp='block'] .ev-year {
+    color: var(--color-st-argument);
+  }
+  .positions [data-camp='growing'] .ev-year,
+  .positions [data-camp='presentism'] .ev-year {
+    color: var(--color-st-open);
+  }
+  .positions [data-camp='neutral'] .ev-year {
+    color: var(--color-st-established);
   }
   .credit-list {
     margin-top: 0.9rem;

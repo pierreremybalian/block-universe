@@ -1,0 +1,77 @@
+[
+  {
+    "id": "michelson-morley",
+    "name": "Michelson–Morley",
+    "year": 1887,
+    "tested": "Whether light's speed depends on the direction Earth is moving through space.",
+    "result": "The expected fringe shift was 0.4; the observed shift was less than a twentieth of that. Light's speed did not depend on direction.",
+    "stages": ["light", "whose"],
+    "sources": [{ "label": "Michelson & Morley 1887, American Journal of Science 34, 333", "url": "https://doi.org/10.2475/ajs.s3-34.203.333" }]
+  },
+  {
+    "id": "ives-stilwell",
+    "name": "Ives–Stilwell",
+    "year": 1938,
+    "tested": "Whether fast-moving atoms tick slower, by measuring the light they emit forward and backward.",
+    "result": "The second-order Doppler shift matched the time dilation of special relativity.",
+    "stages": ["clocks"],
+    "sources": [{ "label": "Ives & Stilwell 1938, Journal of the Optical Society of America 28, 215", "url": "https://doi.org/10.1364/JOSA.28.000215" }]
+  },
+  {
+    "id": "rossi-hall",
+    "name": "Rossi–Hall",
+    "year": 1941,
+    "tested": "Whether muons made by cosmic rays live longer when they move faster.",
+    "result": "Fast muons survived the trip through the atmosphere far more often than their rest lifetime allows, as time dilation predicts.",
+    "stages": ["clocks"],
+    "sources": [{ "label": "Rossi & Hall 1941, Physical Review 59, 223", "url": "https://doi.org/10.1103/PhysRev.59.223" }]
+  },
+  {
+    "id": "pound-rebka",
+    "name": "Pound–Rebka",
+    "year": 1959,
+    "tested": "Whether clocks run at different rates at the top and bottom of a 22.5 m tower.",
+    "result": "The frequency shift was 1.05 ± 0.10 times the prediction of general relativity (later refined to 1%).",
+    "stages": ["curved"],
+    "sources": [{ "label": "Pound & Rebka 1960, Physical Review Letters 4, 337", "url": "https://doi.org/10.1103/PhysRevLett.4.337" }]
+  },
+  {
+    "id": "hafele-keating",
+    "name": "Hafele–Keating",
+    "year": 1971,
+    "tested": "Whether atomic clocks flown around the world on airliners come back out of step with clocks on the ground.",
+    "result": "Eastward: −59 ± 10 ns (predicted −40 ± 23). Westward: +273 ± 7 ns (predicted +275 ± 21).",
+    "stages": ["clocks", "curved"],
+    "sources": [
+      { "label": "Hafele & Keating 1972, Science 177, 166 (predicted)", "url": "https://doi.org/10.1126/science.177.4044.166" },
+      { "label": "Hafele & Keating 1972, Science 177, 168 (observed)", "url": "https://doi.org/10.1126/science.177.4044.168" }
+    ]
+  },
+  {
+    "id": "cern-muons",
+    "name": "CERN muon storage ring",
+    "year": 1977,
+    "tested": "How long muons circling at 99.94% of light speed live, compared with muons at rest.",
+    "result": "With a Lorentz factor of 29.33 they lived 64.4 µs instead of 2.2 µs, matching special relativity to about one part in a thousand.",
+    "stages": ["clocks"],
+    "sources": [{ "label": "Bailey et al. 1977, Nature 268, 301", "url": "https://doi.org/10.1038/268301a0" }]
+  },
+  {
+    "id": "chou-optical-clocks",
+    "name": "Optical clocks at 33 cm",
+    "year": 2010,
+    "tested": "Whether raising a clock by a third of a meter, or moving it at walking pace, changes its rate.",
+    "result": "Both effects were measured at the size relativity predicts: about 4 parts in 10¹⁷ for 33 cm of height.",
+    "stages": ["curved", "you"],
+    "sources": [{ "label": "Chou et al. 2010, Science 329, 1630", "url": "https://doi.org/10.1126/science.1192720" }]
+  },
+  {
+    "id": "gps",
+    "name": "GPS",
+    "year": 1978,
+    "tested": "Whether satellite clocks need correcting for their speed and their height.",
+    "result": "They run about 38 µs a day fast relative to the ground (+45.7 from height, −7.1 from speed) and are built to tick slow to compensate.",
+    "stages": ["clocks", "curved"],
+    "sources": [{ "label": "Ashby 2003, Relativity in the Global Positioning System, Living Reviews in Relativity 6, 1", "url": "https://doi.org/10.12942/lrr-2003-1" }]
+  }
+]

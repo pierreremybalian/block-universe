@@ -1,0 +1,66 @@
+[
+  {
+    "id": "mctaggart",
+    "who": "J. M. E. McTaggart",
+    "year": 1908,
+    "claim": "Separated two ways of ordering time: as past, present and future (which change) and as earlier and later (which never do). Argued the first is incoherent.",
+    "camp": "neutral",
+    "sources": [{ "label": "McTaggart 1908, The Unreality of Time, Mind 17, 457", "url": "https://doi.org/10.1093/mind/XVII.4.457" }]
+  },
+  {
+    "id": "minkowski",
+    "who": "Hermann Minkowski",
+    "year": 1908,
+    "claim": "Space by itself and time by itself fade into shadows; only a union of the two keeps an independent reality.",
+    "camp": "block",
+    "sources": [{ "label": "Minkowski 1908, Space and Time (English translation)", "url": "https://en.wikisource.org/wiki/Translation:Space_and_Time" }]
+  },
+  {
+    "id": "broad",
+    "who": "C. D. Broad",
+    "year": 1923,
+    "claim": "The past and present exist; the future does not yet. Reality grows as new slices are added to the top.",
+    "camp": "growing",
+    "sources": [{ "label": "Stanford Encyclopedia of Philosophy: Time (the growing block)", "url": "https://plato.stanford.edu/entries/time/" }]
+  },
+  {
+    "id": "rietdijk",
+    "who": "C. W. Rietdijk",
+    "year": 1966,
+    "claim": "If what is simultaneous with something real is real, special relativity forces the future to be as real as the present.",
+    "camp": "block",
+    "sources": [{ "label": "Rietdijk 1966, A Rigorous Proof of Determinism Derived from the Special Theory of Relativity, Philosophy of Science 33, 341", "url": "https://doi.org/10.1086/288106" }]
+  },
+  {
+    "id": "putnam",
+    "who": "Hilary Putnam",
+    "year": 1967,
+    "claim": "Made the same argument independently: relativity leaves no room for a privileged present, so future events are already real.",
+    "camp": "block",
+    "sources": [{ "label": "Putnam 1967, Time and Physical Geometry, Journal of Philosophy 64, 240", "url": "https://doi.org/10.2307/2024493" }]
+  },
+  {
+    "id": "stein",
+    "who": "Howard Stein",
+    "year": 1968,
+    "claim": "Replied that the only frame-free notion of 'already happened' is an event's past light cone. Becoming can be relative to each event, without a block.",
+    "camp": "neutral",
+    "sources": [{ "label": "Stein 1968, On Einstein–Minkowski Space–Time, Journal of Philosophy 65, 5", "url": "https://doi.org/10.2307/2024512" }]
+  },
+  {
+    "id": "penrose",
+    "who": "Roger Penrose",
+    "year": 1989,
+    "claim": "Popularized the argument with two people walking past each other while a fleet sets off from Andromeda, or doesn't yet.",
+    "camp": "neutral",
+    "sources": [{ "label": "The Rietdijk–Putnam argument and Penrose's Andromeda version", "url": "https://en.wikipedia.org/wiki/Rietdijk%E2%80%93Putnam_argument" }]
+  },
+  {
+    "id": "ellis",
+    "who": "George Ellis",
+    "year": 2006,
+    "claim": "Proposed an evolving, “crystallizing” block: quantum events settle the future as they happen, so the block grows.",
+    "camp": "growing",
+    "sources": [{ "label": "Ellis 2006, Physics in the Real Universe: Time and Spacetime (arXiv:gr-qc/0605049)", "url": "https://arxiv.org/abs/gr-qc/0605049" }]
+  }
+]
