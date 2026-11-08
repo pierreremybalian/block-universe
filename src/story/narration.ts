@@ -1,23 +1,13 @@
-// Guided narration behaviour: shows the caption scheduled for the current progress, keeps the clock and the stage
-// label current, and announces stage changes politely. All DOM writes are batched to one rAF.
+// Guided narration behaviour: shows the caption scheduled for the current progress, keeps the stage label and the
+// dual clock current, and announces stage changes politely. All DOM writes are batched to one rAF.
 
-import { $chapterId, $progress, $sceneInfo, $time } from '../state/store.ts';
-import type { Accuracy } from '../scenes/types.ts';
-import { createGlobals, globalsAt } from '../physics/cosmology.ts';
-import { num, plainWhen, sci } from '../time/format.ts';
-import { CHAPTERS } from '../time/chapters.ts';
-import { ACCURACY_LABEL } from '../data/site.ts';
+import { $progress, $stage } from '../state/store.ts';
+import { STAGES } from '../time/stages.ts';
+import { STATUS_LABEL } from '../data/site.ts';
 import { supHtml } from '../lib/sup.ts';
+import { readouts } from '../script/index.ts';
+import '../script/all.ts';
 import { HERO_END, captionAt } from './schedule.ts';
-
-/** From the solar system on, the clock counts back from today. */
-const FIRST_LOOKBACK_CHAPTER = CHAPTERS.findIndex((c) => c.id === 'solarSystem');
-
-function fmtTemp(T: number): string {
-  if (T >= 1e6) return `${sci(T)} K`;
-  if (T >= 100) return `${num(T, 3)} K`;
-  return `${T.toFixed(1)} K`;
-}
 
 export function initNarration(root: HTMLElement): void {
   const q = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
@@ -27,23 +17,21 @@ export function initNarration(root: HTMLElement): void {
   const bar = q<HTMLElement>('[data-bar]');
   const stageNum = q<HTMLElement>('[data-stage-num]');
   const stageName = q<HTMLElement>('[data-stage-name]');
-  const accChip = q<HTMLElement>('[data-acc-chip]');
-  const accLabel = q<HTMLElement>('[data-acc-label]');
-  const when = q<HTMLElement>('[data-when]');
-  const phys = q<HTMLElement>('[data-phys]');
+  const chip = q<HTMLElement>('[data-acc-chip]');
+  const chipLabel = q<HTMLElement>('[data-acc-label]');
+  const dual = q<HTMLElement>('[data-dual]');
   const live = q<HTMLElement>('[data-live]');
-  const total = String(CHAPTERS.length).padStart(2, '0');
+  const total = String(STAGES.length).padStart(2, '0');
 
-  const g = createGlobals();
   let current = -1;
-  let lastChapter = -1;
-  let lastWhen = '';
+  let lastStage = -1;
+  let lastDual = '';
   let pending = false;
 
   const draw = () => {
     pending = false;
     const p = $progress.get();
-    const s = $time.get();
+    const s = $stage.get();
     root.classList.toggle('is-hero', p < HERO_END * 0.6);
     bar.style.setProperty('--p', String(p));
 
@@ -54,26 +42,25 @@ export function initNarration(root: HTMLElement): void {
       current = idx;
     }
 
-    if (s.chapterIndex !== lastChapter) {
-      const first = lastChapter === -1;
-      lastChapter = s.chapterIndex;
-      stageNum.textContent = `${String(s.chapterIndex + 1).padStart(2, '0')} / ${total}`;
-      stageName.textContent = titles[s.chapterIndex] ?? '';
-      if (!first) {
-        const c = CHAPTERS[s.chapterIndex]!;
-        const late = s.chapterIndex >= FIRST_LOOKBACK_CHAPTER;
-        const at = plainWhen(c.tStart, { lookback: late, lookbackSeconds: c.lookbackStart });
-        live.textContent = `Stage ${s.chapterIndex + 1} of ${CHAPTERS.length}: ${titles[s.chapterIndex] ?? ''}. ${at}.`;
-      }
+    if (s.index !== lastStage) {
+      const first = lastStage === -1;
+      lastStage = s.index;
+      const st = STAGES[s.index]!;
+      stageNum.textContent = `${String(s.index + 1).padStart(2, '0')} / ${total}`;
+      stageName.textContent = titles[s.index] ?? '';
+      chip.dataset.st = st.status;
+      chipLabel.textContent = STATUS_LABEL[st.status];
+      if (!first) live.textContent = `Stage ${s.index + 1} of ${STAGES.length}: ${titles[s.index] ?? ''}. ${STATUS_LABEL[st.status]}.`;
     }
 
-    const late = s.chapterIndex >= FIRST_LOOKBACK_CHAPTER;
-    const w = plainWhen(s.t, { lookback: late, lookbackSeconds: s.lookback });
-    if (w !== lastWhen) {
-      lastWhen = w;
-      when.innerHTML = supHtml(w);
-      globalsAt(s.t, g);
-      phys.innerHTML = supHtml(`Temperature ${fmtTemp(g.T)}`);
+    // Dual clock: rows from the stage script (rebuilt only when the text changes).
+    const rows = readouts(s.stageId, s.local);
+    const key = rows.map((r) => `${r.tone}|${r.label}|${r.value}`).join('¦');
+    if (key !== lastDual) {
+      lastDual = key;
+      dual.innerHTML = rows
+        .map((r) => `<dt data-tone="${r.tone}"><i></i>${r.label}</dt><dd data-tone="${r.tone}">${supHtml(r.value)}</dd>`)
+        .join('');
     }
   };
   const schedule = () => {
@@ -84,25 +71,4 @@ export function initNarration(root: HTMLElement): void {
   };
   $progress.subscribe(schedule);
 
-  // Honesty: the stage chip says how sure we are about the current stage's scene, the intro card what it
-  // exaggerates. Scenes publish their info once live; remember it so the chip never shows the outgoing scene.
-  const infos = new Map<string, { accuracy: Accuracy; accuracyNote: string }>();
-  const showChip = () => {
-    const info = infos.get(CHAPTERS[$time.get().chapterIndex]!.sceneId);
-    accChip.hidden = !info;
-    if (!info) return;
-    accChip.dataset.acc = info.accuracy;
-    accLabel.textContent = ACCURACY_LABEL[info.accuracy];
-  };
-  $sceneInfo.subscribe((info) => {
-    if (!info) return;
-    infos.set(info.sceneId, info);
-    showChip();
-    root.querySelectorAll<HTMLElement>(`[data-cap-note][data-scene="${info.sceneId}"]`).forEach((n) => {
-      n.hidden = false;
-      n.dataset.acc = info.accuracy;
-      n.innerHTML = `<b>${ACCURACY_LABEL[info.accuracy]}.</b> ${supHtml(info.accuracyNote)}`;
-    });
-  });
-  $chapterId.subscribe(showChip);
 }

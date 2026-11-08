@@ -6,7 +6,7 @@
 import { AdditiveBlending, DoubleSide, Mesh, MeshBasicNodeMaterial, PlaneGeometry, Color } from 'three/webgpu';
 import { Discard, Fn, If, abs, exp, float, fract, fwidth, min, positionLocal, smoothstep, uniform, vec3, vec4 } from 'three/tsl';
 import type { Node } from 'three/webgpu';
-import type { BlockKit } from './kit.ts';
+import type { BlockKit, FloatU, ColorU } from './kit.ts';
 import type { Bounds } from './glassBlock.ts';
 import type { RGB } from './palette.ts';
 
@@ -15,12 +15,12 @@ type V3 = Node<'vec3'>;
 
 export interface KnifeSheet {
   mesh: Mesh;
-  beta: ReturnType<typeof uniform<number>>;
-  c: ReturnType<typeof uniform<number>>;
-  opacity: ReturnType<typeof uniform<number>>;
-  colour: ReturnType<typeof uniform<Color>>;
+  beta: FloatU;
+  c: FloatU;
+  opacity: FloatU;
+  colour: ColorU;
   /** 0–1: how much of the procedural image shows. */
-  image: ReturnType<typeof uniform<number>>;
+  image: FloatU;
   set(beta: number, c: number, opacity?: number): void;
   dispose(): void;
 }

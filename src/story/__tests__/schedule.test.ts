@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { captionAt, captionSchedule } from '../schedule.ts';
-import { CHAPTERS, CHAPTER_STARTS } from '../../time/chapters.ts';
+import { STAGES as CHAPTERS, STAGE_STARTS as CHAPTER_STARTS } from '../../time/stages.ts';
 
 describe('caption schedule', () => {
   it('keeps beats at their local when there is room', () => {

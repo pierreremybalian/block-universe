@@ -3,7 +3,8 @@
 
 import { AdditiveBlending, BoxGeometry, DoubleSide, Mesh, MeshBasicNodeMaterial, Color } from 'three/webgpu';
 import { abs, exp, float, fract, fwidth, max, min, positionLocal, smoothstep, uniform, vec3, vec4 } from 'three/tsl';
-import type { BlockKit } from './kit.ts';
+import type { Node } from 'three/webgpu';
+import type { BlockKit, FloatU, ColorU } from './kit.ts';
 import { createRibbons, type Ribbons } from './ribbons.ts';
 import { PAL, type RGB } from './palette.ts';
 
@@ -19,9 +20,9 @@ export interface Bounds {
 export interface GlassBlock {
   faces: Mesh;
   edges: Ribbons;
-  opacity: ReturnType<typeof uniform<number>>;
-  gridOpacity: ReturnType<typeof uniform<number>>;
-  tint: ReturnType<typeof uniform<Color>>;
+  opacity: FloatU;
+  gridOpacity: FloatU;
+  tint: ColorU;
   add(to: { add(...o: Mesh[]): unknown }): void;
   dispose(): void;
 }
@@ -38,7 +39,7 @@ export function createGlassBlock(kit: BlockKit, b: Bounds, o: { grid?: number; g
   const sp = vec3(x, t, y);
   const gx = o.grid ?? 1;
   const gt = o.gridT ?? gx;
-  const line = (v: ReturnType<typeof float>, s: number) => {
+  const line = (v: Node<'float'>, s: number) => {
     const f = abs(fract(v.div(s).add(0.5)).sub(0.5));
     return float(1).sub(smoothstep(float(0), fwidth(v.div(s)).mul(1.1), f));
   };

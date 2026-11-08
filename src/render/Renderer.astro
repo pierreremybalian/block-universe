@@ -1,32 +1,33 @@
 ---
-// Fixed, full-screen canvas. Boots once and never remounts (transition:persist). HANDOFF §3, §10.
-import { CHAPTERS } from '../time/chapters.ts';
+// Fixed, full-screen canvas and the 3D-anchored label layer. Boots once and never remounts (transition:persist).
+import { STAGES } from '../time/stages.ts';
 ---
 
 <div id="cosmos" class="cosmos" transition:persist aria-hidden="true">
   <canvas id="cosmos-canvas"></canvas>
   <div class="stills" data-stills>
-    {CHAPTERS.map((c) => <div class="still" data-still={c.id}></div>)}
+    {STAGES.map((c) => <div class="still" data-still={c.id}></div>)}
   </div>
   <div class="veil"></div>
 </div>
+<div class="labels" data-labels aria-hidden="true"></div>
 
 <script>
   import { createEngine } from './renderer.ts';
-  import { $chapterId, $rendererStatus, $sceneStatus, $time } from '../state/store.ts';
+  import { $stageId, $rendererStatus, $sceneStatus, $stage } from '../state/store.ts';
 
   const root = document.getElementById('cosmos')!;
   const canvas = document.getElementById('cosmos-canvas') as HTMLCanvasElement;
 
   // Static stills follow the chapter when there is no GPU (or before the renderer is ready).
   const stills = root.querySelectorAll<HTMLElement>('[data-still]');
-  $chapterId.subscribe((id) => {
+  $stageId.subscribe((id) => {
     stills.forEach((s) => s.classList.toggle('is-on', s.dataset.still === id));
   });
   // While the current chapter's scene is still loading (e.g. right after a long jump), show its still.
   let stillsFetched = false;
   const updateLoading = () => {
-    const status = $sceneStatus.get()[$time.get().sceneId];
+    const status = $sceneStatus.get()[$stage.get().sceneId];
     const loading = $rendererStatus.get() === 'ready' && status !== 'ready' && status !== 'failed';
     root.classList.toggle('is-loading', loading);
     if (loading && !stillsFetched) {
@@ -35,7 +36,7 @@ import { CHAPTERS } from '../time/chapters.ts';
     }
   };
   $sceneStatus.subscribe(updateLoading);
-  $chapterId.subscribe(updateLoading);
+  $stageId.subscribe(updateLoading);
   $rendererStatus.subscribe((s) => {
     root.setAttribute('data-status', s);
     // Stills are only fetched when they are needed.
@@ -43,7 +44,7 @@ import { CHAPTERS } from '../time/chapters.ts';
       stills.forEach((el) => (el.style.backgroundImage = `url(/stills/${el.dataset.still}.webp)`));
   });
 
-  createEngine({ canvas })
+  createEngine({ canvas, labelRoot: document.querySelector<HTMLElement>('[data-labels]')! })
     .then((engine) => {
       (window as unknown as { __engine?: unknown }).__engine = engine;
     })

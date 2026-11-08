@@ -1,9 +1,12 @@
 ---
 // The guided narration: one caption at a time, timed to the scroll (src/story/schedule.ts), a plain-language clock,
-// the stage you are in and a thin progress line. Purely visual (aria-hidden): the same text is in the story DOM
-// for screen readers, and chapter changes are announced through the live region.
-import { CHAPTERS, CHAPTER_STARTS } from '../time/chapters.ts';
+// the stage you are in, the dual clock (what this stage compares) and a thin progress line. Purely visual
+// (aria-hidden): the same text is in the story DOM for screen readers, and stage changes are announced.
+import { STAGES, STAGE_STARTS } from '../time/stages.ts';
 import { supHtml } from '../lib/sup.ts';
+import { STATUS_LABEL } from '../data/site.ts';
+import { stageNote } from '../script/index.ts';
+import '../script/all.ts';
 
 export interface NarrationCaption {
   chapter: number;
@@ -28,19 +31,16 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <div class="visual" aria-hidden="true">
     <div class="bar">
       <i data-bar></i>
-      {CHAPTER_STARTS.slice(1, -1).map((p) => <span style={`left: ${(p * 100).toFixed(3)}%`}></span>)}
+      {STAGE_STARTS.slice(1, -1).map((p) => <span style={`left: ${(p * 100).toFixed(3)}%`}></span>)}
     </div>
 
     <div class="top">
       <p class="stage">
-        <span class="num" data-stage-num>01 / {pad(CHAPTERS.length)}</span>
+        <span class="num" data-stage-num>01 / {pad(STAGES.length)}</span>
         <span class="name" data-stage-name>{titles[0]}</span>
-        <span class="acc" data-acc-chip hidden><i></i><span data-acc-label></span></span>
+        <span class="acc" data-acc-chip data-st={STAGES[0]!.status}><i></i><span data-acc-label></span></span>
       </p>
-      <p class="clock">
-        <span class="when" data-when></span>
-        <span class="phys" data-phys></span>
-      </p>
+      <dl class="dual" data-dual></dl>
     </div>
 
     <div class="caps">
@@ -54,7 +54,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
               </p>
               <h2>{c.title}</h2>
               <p class="summary" set:html={supHtml(c.text)} />
-              <p class="note" data-cap-note data-scene={CHAPTERS[c.chapter]!.sceneId} hidden />
+              {stageNote(STAGES[c.chapter]!.id) && (
+                <p class="note" data-st={STAGES[c.chapter]!.status}>
+                  <b>{STATUS_LABEL[STAGES[c.chapter]!.status]}.</b> <Fragment set:html={supHtml(stageNote(STAGES[c.chapter]!.id))} />
+                </p>
+              )}
             </div>
           ) : (
             <div class="cap beat" data-cap data-start={c.start} data-chapter={c.chapter}>
@@ -153,10 +157,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    color: var(--acc, var(--color-mute));
-  }
-  .acc[hidden] {
-    display: none;
+    color: var(--st, var(--color-mute));
   }
   .acc i {
     width: 6px;
@@ -164,34 +165,62 @@ const pad = (n: number) => String(n).padStart(2, '0');
     border-radius: 50%;
     background: currentColor;
   }
-  .clock {
+  /* The dual clock: what this stage compares, computed from its script. */
+  .dual {
     display: grid;
-    justify-items: end;
-    gap: 0.3rem;
+    grid-template-columns: auto auto;
+    column-gap: 1rem;
+    row-gap: 0.28rem;
+    justify-content: end;
+    align-items: baseline;
     text-align: right;
+    min-height: 1rem;
   }
-  .when {
-    font-family: var(--font-serif);
-    font-size: clamp(1.05rem, 1.5vw, 1.3rem);
-    color: var(--color-paper);
-  }
-  .phys {
+  .dual :global(dt) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
     font-family: var(--font-mono);
     font-size: 0.64rem;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--color-mute);
   }
-  [data-acc='measured'] {
-    --acc: var(--color-acc-measured);
+  .dual :global(dt i) {
+    width: 0.55rem;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--tone);
+    box-shadow: 0 0 8px var(--tone);
   }
-  [data-acc='simulated'] {
-    --acc: var(--color-acc-simulated);
+  .dual :global(dd) {
+    font-family: var(--font-serif);
+    font-size: clamp(1.02rem, 1.4vw, 1.22rem);
+    font-variant-numeric: tabular-nums;
+    color: var(--tone);
+    transition: color 0.4s ease;
   }
-  [data-acc='modelled'] {
-    --acc: var(--color-acc-modelled);
+  .dual :global([data-tone='a']) {
+    --tone: var(--color-obs-a);
   }
-  [data-acc='metaphor'] {
-    --acc: var(--color-acc-metaphor);
+  .dual :global([data-tone='b']) {
+    --tone: var(--color-obs-b);
+  }
+  .dual :global([data-tone='both']) {
+    --tone: var(--color-obs-both);
+  }
+  .dual :global([data-tone='light']) {
+    --tone: var(--color-light);
+  }
+  .dual :global([data-tone='warm']) {
+    --tone: var(--color-bowl);
+  }
+  .dual :global([data-tone='plain']) {
+    --tone: var(--color-paper);
+  }
+  .dual :global([data-tone='mute']) {
+    --tone: var(--color-mute);
   }
 
   .caps {
@@ -257,14 +286,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
     margin-top: 1.1rem;
     max-width: 30rem;
     padding-left: 0.8rem;
-    border-left: 2px solid var(--acc, var(--color-line-strong));
+    border-left: 2px solid var(--st, var(--color-line-strong));
     font-size: 0.8rem;
     line-height: 1.5;
     color: var(--color-mute);
     text-shadow: 0 1px 12px rgb(0 0 0 / 0.9);
   }
   .note b {
-    color: var(--acc);
+    color: var(--st);
     font-weight: 500;
   }
   .time {
@@ -298,8 +327,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
       gap: 0.25rem;
       font-size: 0.6rem;
     }
-    .when {
-      font-size: 0.95rem;
+    .dual :global(dd) {
+      font-size: 0.9rem;
+    }
+    .dual :global(dt) {
+      font-size: 0.55rem;
     }
     .caps {
       left: 1rem;

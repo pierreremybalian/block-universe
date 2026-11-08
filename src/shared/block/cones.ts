@@ -4,19 +4,19 @@
 
 import { AdditiveBlending, BufferGeometry, DoubleSide, Float32BufferAttribute, Mesh, MeshBasicNodeMaterial, Vector3, Color } from 'three/webgpu';
 import { abs, attribute, exp, float, fract, fwidth, max, smoothstep, step, uniform, vec3, vec4, cos, sin } from 'three/tsl';
-import type { BlockKit } from './kit.ts';
+import type { BlockKit, FloatU, Vec3U, ColorU } from './kit.ts';
 import { PAL, type RGB } from './palette.ts';
 
 export interface LightCone {
   mesh: Mesh;
-  apex: ReturnType<typeof uniform<Vector3>>;
+  apex: Vec3U;
   /** Height of the cone (both halves) in display units. */
-  height: ReturnType<typeof uniform<number>>;
+  height: FloatU;
   /** 0–1 of height shown for the future and past halves. */
-  future: ReturnType<typeof uniform<number>>;
-  past: ReturnType<typeof uniform<number>>;
-  opacity: ReturnType<typeof uniform<number>>;
-  colour: ReturnType<typeof uniform<Color>>;
+  future: FloatU;
+  past: FloatU;
+  opacity: FloatU;
+  colour: ColorU;
   dispose(): void;
 }
 

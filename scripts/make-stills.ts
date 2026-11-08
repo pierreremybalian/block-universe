@@ -3,18 +3,18 @@
 // Usage: node scripts/make-stills.ts [--base http://localhost:4330] [--only id1,id2] [--webgl]
 import { chromium, type Page } from 'playwright';
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { CHAPTERS, CHAPTER_STARTS } from '../src/time/chapters.ts';
+import { STAGES as CHAPTERS, STAGE_STARTS as CHAPTER_STARTS } from '../src/time/stages.ts';
 
 const args = process.argv.slice(2);
 const opt = (k: string, d?: string) => {
   const i = args.indexOf(`--${k}`);
   return i >= 0 ? args[i + 1] : d;
 };
-const base = opt('base', 'http://localhost:4340')!;
+const base = opt('base', 'http://localhost:4350')!;
 const only = opt('only')?.split(',');
 const webgl = args.includes('--webgl');
 /** Where in each chapter the still is taken (most representative frame). */
-const AT: Record<string, number> = { recombination: 0.97, now: 0.97, planck: 0.45, inflation: 0.7, bbn: 0.35 };
+const AT: Record<string, number> = {};
 
 mkdirSync(new URL('../public/stills/', import.meta.url), { recursive: true });
 const browser = await chromium.launch({

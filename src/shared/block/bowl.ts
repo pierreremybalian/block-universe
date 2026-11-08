@@ -4,17 +4,17 @@
 
 import { AdditiveBlending, BufferGeometry, DoubleSide, Float32BufferAttribute, Mesh, MeshBasicNodeMaterial, Vector3, Color } from 'three/webgpu';
 import { abs, attribute, cos, exp, float, fract, fwidth, sin, smoothstep, sqrt, step, uniform, vec3, vec4 } from 'three/tsl';
-import type { BlockKit } from './kit.ts';
+import type { BlockKit, FloatU, Vec3U } from './kit.ts';
 import { PAL, type RGB } from './palette.ts';
 
 export interface Bowls {
   mesh: Mesh;
-  origin: ReturnType<typeof uniform<Vector3>>;
+  origin: Vec3U;
   /** Number of bowls shown (fractional fades the last one in). */
-  shown: ReturnType<typeof uniform<number>>;
-  opacity: ReturnType<typeof uniform<number>>;
+  shown: FloatU;
+  opacity: FloatU;
   /** Clip above this coordinate time (relative to the origin). */
-  tMax: ReturnType<typeof uniform<number>>;
+  tMax: FloatU;
   dispose(): void;
 }
 

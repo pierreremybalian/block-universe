@@ -30,7 +30,8 @@ import {
   vec4,
   vertexStage,
 } from 'three/tsl';
-import type { BlockKit } from './kit.ts';
+import type { Node } from 'three/webgpu';
+import type { BlockKit, FloatU } from './kit.ts';
 import type { RGB } from './palette.ts';
 
 export interface PathSpec {
@@ -59,7 +60,7 @@ export interface Ribbons {
   state: Vector4[];
   set(i: number, reveal: number, intensity?: number, from?: number, highlight?: number): void;
   /** Global multiplier. */
-  opacity: ReturnType<typeof uniform<number>>;
+  opacity: FloatU;
   dispose(): void;
 }
 
@@ -151,7 +152,8 @@ export function createRibbons(kit: BlockKit, paths: readonly PathSpec[]): Ribbon
   const halfW = max(aStyle.x, dist.mul(0.0016));
   const pos = wc.add(sideDir.mul(aSide).mul(halfW));
 
-  const st = vertexStage(uState.element(aPath.toInt()));
+  // vertexStage keeps the per-path lookup in the vertex shader (one varying), safe on WebGL2.
+  const st = vertexStage(uState.element(aPath.toInt())) as unknown as Node<'vec4'>;
   const v = aSide; // −1…1 across the ribbon (interpolated)
   const tick = aStyle.y;
   const phase = fract(aTau.div(max(tick, 1e-6)));
