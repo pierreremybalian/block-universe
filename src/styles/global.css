@@ -91,6 +91,9 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+.lbl-keepcase > span {
+  text-transform: none;
+}
 .lbl-right > span {
   left: 0.7rem;
   transform: translateY(-50%);

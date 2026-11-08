@@ -177,7 +177,8 @@ export function createRibbons(kit: BlockKit, paths: readonly PathSpec[]): Ribbon
   const revealEnd = st.x;
   const revealFrom = st.z;
   const inside = step(aAlong, revealEnd.add(1e-4)).mul(step(revealFrom.sub(1e-4), aAlong));
-  const head = exp(revealEnd.sub(aAlong).div(0.012).pow(2).negate()).mul(step(revealEnd, 0.999)).mul(inside);
+  // The hot writing head only while a path is being drawn (not before it starts, not once complete).
+  const head = exp(revealEnd.sub(aAlong).div(0.012).pow(2).negate()).mul(step(revealEnd, 0.999)).mul(step(1e-4, revealEnd)).mul(inside);
 
   const glow = kit.sliceGlow(c).mul(sliceResponse);
   const exist = kit.existence(c).mul(existResponse).add(float(1).sub(existResponse));

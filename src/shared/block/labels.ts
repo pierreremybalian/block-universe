@@ -113,7 +113,8 @@ export class LabelLayer {
     if (!p) {
       const els = set.specs.map((sp) => {
         const el = document.createElement('div');
-        el.className = `lbl lbl-${sp.side ?? 'right'} lbl-${sp.size ?? 'md'}`;
+        // Small labels are uppercased by CSS; µ would become Μ ("MS"), so units keep their case.
+        el.className = `lbl lbl-${sp.side ?? 'right'} lbl-${sp.size ?? 'md'}${/[µμ]/.test(sp.text) ? ' lbl-keepcase' : ''}`;
         el.dataset.tone = sp.tone ?? 'plain';
         el.innerHTML = `<span>${sp.text}</span>`;
         el.style.opacity = '0';
