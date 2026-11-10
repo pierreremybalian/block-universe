@@ -8,14 +8,14 @@
 
 A guided, scroll-driven, full-screen 3D explanation of the **block universe**: the view that past, present and future are equally real, and that "now" is a perspective, not a property of the world.
 
-- **Scroll is the argument, not the clock.** Thirteen stages move the reader from "time flows" to "all times exist", then ask honestly whether that is true.
+- **Scroll is the argument, not the clock.** Fourteen stages move the reader from "time flows" to "all times exist", then ask honestly whether that is true.
 - **Comparison is the medium.** The subject is time, so every stage compares timelines: two observers' "nows", two clocks, two photographs of the same block, four philosophies of the same block. §9 defines a library of *comparison instruments* that the stages share.
 - **One shared block.** A single seeded set of worldlines and events (`src/shared/world.ts`) is the throughline (Cosmic History's primordial field played this role). What the reader stacks in stage 2 is what gets sliced in stage 6 and seen whole in stage 9.
 - **Physics drives visuals.** Every tilt, tick spacing and offset comes from `src/relativity/` (pure, unit-tested TypeScript). No physical value is hand-typed in a shader or in copy.
 - **Honesty is a feature.** Every stage declares a *status* (§13) and a one-sentence scale note naming any exaggeration.
 
 ### Presentation (decided up front; Cosmic History's owner feedback)
-Guided walkthrough, not an explorer: **no rail, no dropdown, no slider, no quality picker.** One caption on screen at a time (intro card per stage, then beats). A 2 px progress line with stage ticks, `06 / 13 · Whose now? · established` top left, and a **dual clock** top right (§10.3). Longer text, "How we know" and sources live in a "Stage by stage" appendix of `<details>` after the journey. Keyboard ↑/↓/Page keys step one caption at a time.
+Guided walkthrough, not an explorer: **no rail, no dropdown, no slider, no quality picker.** One caption on screen at a time (intro card per stage, then beats). A 2 px progress line with stage ticks, `06 / 14 · Whose now? · established` top left, and a **dual clock** top right (§10.3). Longer text, "How we know" and sources live in a "Stage by stage" appendix of `<details>` after the journey. Keyboard ↑/↓/Page keys step one caption at a time.
 
 ### Non-goals
 No backend, accounts, CMS or audio. No VR. No interactive sandbox (decided: scroll-only, consistent with Cosmic History).
@@ -159,9 +159,10 @@ Each stage owns a scroll span (`scrollWeight` × 80 svh). `local` ∈ [0, 1] wit
 | 8 | andromeda | Two walkers, one galaxy | argument | 9 | zoom |
 | 9 | eternal | Everything, all at once | argument | 6 | dissolve |
 | 10 | you | Your worldline | measured | 7 | zoom |
-| 11 | curved | The block bends | measured | 8 | dissolve |
-| 12 | rivals | Is it true? | open | 8 | dissolve |
-| 13 | whole | The block of everything | measured | 6 | zoom |
+| 11 | choice | Already written? | argument | 8 | dissolve |
+| 12 | curved | The block bends | measured | 8 | dissolve |
+| 13 | rivals | Is it true? | open | 8 | dissolve |
+| 14 | whole | The block of everything | measured | 6 | zoom |
 
 ---
 
@@ -221,9 +222,10 @@ Display units are c = 1. Each scene declares its scale in its status note.
 8. **andromeda · argument** — Earth on the left, Andromeda's worldline 2.5 Mly away. Two walkers pass in the street; their knives fan out across the gap; at Andromeda they meet the galaxy's history days apart (Loupe ×10¹⁴, scale bar). A fleet-launch event sits between them. Then the Ribbon: at any speed, ±2.5 million years. HUD: Atlas of Elsewhere.
 9. **eternal · argument** — The Fan sweeps through every possible now; each lights a different set of events until everything has been "now" for someone; the block lights uniformly. Camera pulls back: the block as an object. Rietdijk–Putnam conclusion stated as an argument, not a result.
 10. **you · measured** — A life as a worldline from birth to death with yearly beads; head and feet as two worldlines that drift 0.47 µs apart over 80 years (Loupe). The arrow of time as an entropy gradient in the block (an ink drop spreading upward), and why memories point to the past.
-11. **curved · measured** — Altitude Comb around Earth's world-tube (rates exaggerated, stated; values exact in the HUD). Then the Tipping Cones down to a black hole's horizon and inside.
-12. **rivals · open** — Quadtych: presentism (only the slice exists), growing block (below the slice), moving spotlight (all, with a privileged light), block (all, no privilege). Captions: Stein 1968 (the light cone is the only invariant "now"), quantum indeterminacy, Ellis's crystallising block, free will. What physics settles and what it doesn't.
-13. **whole · measured** — Pull out to cosmic scale: our past light cone's teardrop from today back to the Big Bang in proper distance (computed from Planck 2018 ΛCDM), galaxies' worldlines spreading apart, the last-scattering ring. End card linking to Cosmic History.
+11. **choice · argument** — The answer to the hero question in human terms. The life from stage 10, paused at 35 under a now: lived from inside (growing-block filter), the future is a fan of dashed possible branches; in the block there is one thread and the branches fade. The now sweeps the life (Weyl 1949). "Fixed is not forced" (Chrysippus' reply to the lazy argument), with a card separating fatalism, determinism, eternalism and predestination. The moment becomes a choice: its future cone (what it can affect, lighting events downstream) and past cone (what can be known there); events elsewhere are neither. The asymmetry of knowing and affecting comes from the entropy slope (Albert 2000), not from a missing future.
+12. **curved · measured** — Altitude Comb around Earth's world-tube (rates exaggerated, stated; values exact in the HUD). Then the Tipping Cones down to a black hole's horizon and inside.
+13. **rivals · open** — Quadtych: presentism (only the slice exists), growing block (below the slice), moving spotlight (all, with a privileged light), block (all, no privilege). Captions: Stein 1968 (the light cone is the only invariant "now"), quantum indeterminacy, Ellis's crystallising block, and what each view means for stage 11's open future. What physics settles and what it doesn't.
+14. **whole · measured** — Pull out to cosmic scale: our past light cone's teardrop from today back to the Big Bang in proper distance (computed from Planck 2018 ΛCDM), galaxies' worldlines spreading apart, the last-scattering ring. End card linking to Cosmic History.
 
 ---
 
@@ -266,7 +268,7 @@ Always shows the comparison the stage is making, computed from the stage script:
 `pnpm test`, `pnpm check`, `pnpm lint`, `pnpm build` pass. `/dev/scenes` harness (scrub, FPS, leak ×50). `scripts/shoot.ts` screenshots per stage on WebGPU and WebGL2. 60 fps medium on a laptop, ≥ 30 fps low on a phone. Lighthouse a11y ≥ 90. Reduced motion holds one frame per stage; no-GPU shows stills.
 
 ## 16. Build phases
-1. Relativity, stages/tracks, data, tests. 2. Skeleton (page, narration, HUD, driver, placeholder). 3. Shared block library + panels + labels + dev harness. 4. Anchor stages `whose`, `andromeda`. 5. `flow`, `stack`, `light`, `clocks`, `ages`. 6. `shutter`, `eternal`, `you`, `rivals`. 7. `curved`, `whole`. 8. Polish: copy, sources, stills, a11y, performance, SEO/OG. Deploy only when the owner says so.
+1. Relativity, stages/tracks, data, tests. 2. Skeleton (page, narration, HUD, driver, placeholder). 3. Shared block library + panels + labels + dev harness. 4. Anchor stages `whose`, `andromeda`. 5. `flow`, `stack`, `light`, `clocks`, `ages`. 6. `shutter`, `eternal`, `you`, `choice`, `rivals`. 7. `curved`, `whole`. 8. Polish: copy, sources, stills, a11y, performance, SEO/OG. Deploy only when the owner says so.
 
 ## 17. Conventions
 Inherited (strict TS, units in names, typed `params` at the top of each scene, TSL only, shared nodes in `src/shared/`, commit per logical step).

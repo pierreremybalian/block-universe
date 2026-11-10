@@ -3,9 +3,9 @@ import { STAGES, STAGE_STARTS, progressToStage, stageToProgress } from '../stage
 import { ramp, track, windowed } from '../tracks.ts';
 
 describe('stages', () => {
-  it('has 13 stages with unique ids and increasing starts', () => {
-    expect(STAGES.length).toBe(13);
-    expect(new Set(STAGES.map((s) => s.id)).size).toBe(13);
+  it('has 14 stages with unique ids and increasing starts', () => {
+    expect(STAGES.length).toBe(14);
+    expect(new Set(STAGES.map((s) => s.id)).size).toBe(14);
     for (let i = 1; i < STAGE_STARTS.length; i++) expect(STAGE_STARTS[i]!).toBeGreaterThan(STAGE_STARTS[i - 1]!);
     expect(STAGE_STARTS.at(-1)).toBe(1);
   });

@@ -16,6 +16,7 @@ Non-obvious choices, deviations from HANDOFF.md, and why. Newest at the bottom o
 - **Transitions**: no `stretch` (it smeared thin lines into streaks); stage 6 dissolves in, stage 13 zooms out to cosmic scale. Labels do not follow a transition's distortion, so the outgoing set clears in the first 40% of the blend and the incoming set arrives in the second half.
 - **Labels are HTML** anchored to 3D points (`LabelSet` → `LabelLayer`), faded with the transition mix, so the canvas never carries text.
 - **Appendix** adds "What has been measured" (experiments.json) and "Who argued what" (positions.json) to Cosmic History's stage-by-stage notes.
+- **Stage 11 `choice` (Already written?)** added after `you`, making 14 stages. The hero asks "Is the future already there?"; this stage says what is at stake (whether what you will do is already settled) and answers it: on the block view the future is fixed but not forced. Status `argument`; the possible-future branches are a metaphor and say so. It replaces the single free-will caption `rivals` had. Chrysippus is cited in the copy, not in positions.json (its schema starts at 1800).
 
 ## Relativity
 

@@ -4,7 +4,7 @@ export const SITE = {
   url: 'https://block-universe.balian.dev',
   title: 'Block Universe — Is the future already there? A guided 3D explanation',
   description:
-    'Relativity says there is no single “now”. Scroll through 13 stages, built from tested physics, to see why many physicists think past, present and future all exist, and why others disagree.',
+    'Relativity says there is no single “now”. Scroll through 14 stages, built from tested physics, to see why many physicists think past, present and future all exist, and why others disagree.',
   ogImage: '/og.png',
   ogImageAlt: 'Block Universe: two glowing slices of “now” cutting a glass block of spacetime at different angles.',
   themeColor: '#020205',

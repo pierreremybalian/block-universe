@@ -1,4 +1,4 @@
-// Stage 12 · Is it true? The same shared block read four ways (the Quadtych): presentism, the growing block, the
+// Stage 13 · Is it true? The same shared block read four ways (the Quadtych): presentism, the growing block, the
 // moving spotlight and the block universe. Pure script shared by the scene and the HUD.
 
 import { ramp, track, windowed } from '../time/tracks.ts';

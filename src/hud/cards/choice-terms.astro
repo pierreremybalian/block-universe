@@ -1,0 +1,93 @@
+---
+// Four words people mix up (stage 11): fatalism, determinism, eternalism and predestination, and which of them the
+// block universe actually claims. Shown while the caption says "fixed is not forced".
+const ROWS = [
+  { term: 'Fatalism', says: 'It happens whatever you do', block: 'No', why: 'what you do is part of why' },
+  { term: 'Determinism', says: 'Past + laws fix the future', block: 'Not needed', why: 'chance events sit in the block too' },
+  { term: 'Eternalism', says: 'The future exists', block: 'Yes', why: 'this is the block view', hl: true },
+  { term: 'Predestination', says: 'Settled beforehand', block: 'No', why: 'there is no “before” the block' },
+];
+---
+
+<section class="card terms" data-card="terms">
+  <h3>Four words <span>does the block say it?</span></h3>
+  <table>
+    <tbody>
+      {
+        ROWS.map((r) => (
+          <tr class={r.hl ? 'hl' : undefined}>
+            <td>
+              {r.term}
+              <small>{r.says}</small>
+            </td>
+            <td class="v">
+              {r.block}
+              <small>{r.why}</small>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</section>
+
+<script>
+  import { choiceState } from '../../script/choice.ts';
+  import { onStage, showCard } from '../card.ts';
+  const card = document.querySelector<HTMLElement>('[data-card="terms"]')!;
+  onStage((s) => showCard(card, s.stageId === 'choice' && choiceState(s.local).terms > 0.5));
+</script>
+
+<style>
+  .card.terms {
+    width: 24rem;
+  }
+  table {
+    width: 100%;
+    margin-top: 0.5rem;
+    border-collapse: collapse;
+  }
+  td {
+    padding: 0.32rem 0;
+    vertical-align: top;
+    border-top: 1px solid rgb(255 255 255 / 0.06);
+    font-size: 0.76rem;
+    color: var(--color-paper);
+  }
+  td.v {
+    padding-left: 1rem;
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-glow);
+  }
+  small {
+    display: block;
+    margin-top: 0.1rem;
+    font-family: var(--font-sans);
+    font-size: 0.64rem;
+    line-height: 1.35;
+    color: var(--color-mute);
+  }
+  tr.hl td {
+    background: linear-gradient(90deg, rgb(255 244 230 / 0.08), rgb(255 244 230 / 0));
+  }
+  tr.hl td.v {
+    color: var(--color-obs-both);
+  }
+  @media (max-width: 767px) {
+    :global(.hud) .card.terms {
+      width: min(18rem, calc(100vw - 2rem));
+    }
+    td {
+      font-size: 0.68rem;
+    }
+    td.v {
+      padding-left: 0.6rem;
+      font-size: 0.62rem;
+    }
+    small {
+      font-size: 0.58rem;
+    }
+  }
+</style>

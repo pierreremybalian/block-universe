@@ -25,6 +25,7 @@ const AT: Record<string, number> = {
   andromeda: 0.5,
   eternal: 0.62,
   you: 0.58,
+  choice: 0.7,
   curved: 0.38,
   rivals: 0.5,
   whole: 0.98,
@@ -95,7 +96,7 @@ if (!only || only.includes('og')) {
     d.style.cssText =
       'position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 64px 64px;background:linear-gradient(90deg,rgb(2 2 5/.86),rgb(2 2 5/.55) 34%,rgb(2 2 5/0) 58%);';
     d.innerHTML =
-      '<p style="font:500 13px var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:#ffd9a0">13 stages · relativity · philosophy of time</p>' +
+      '<p style="font:500 13px var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:#ffd9a0">14 stages · relativity · philosophy of time</p>' +
       '<h1 style="margin-top:10px;font:300 92px/0.95 var(--font-serif);letter-spacing:-.03em;color:#eef0fa">Block<br>Universe</h1>' +
       '<p style="margin-top:18px;max-width:430px;font:400 21px/1.4 var(--font-serif);font-style:italic;color:#c9cfe6">Is the future already there? Two observers, two “nows”, one block of spacetime.</p>';
     document.body.appendChild(d);

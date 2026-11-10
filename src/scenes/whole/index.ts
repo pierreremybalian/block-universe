@@ -1,4 +1,4 @@
-// Stage 13 · The block of everything (HANDOFF §10.13). Cosmic time runs up from the Big Bang to today; distance is
+// Stage 14 · The block of everything (HANDOFF §10.13). Cosmic time runs up from the Big Bang to today; distance is
 // proper distance, in the same scale, so light near us still travels at 45°. Our past light cone, computed from
 // Planck 2018 ΛCDM, is a teardrop: it widens to 5.85 billion light-years and narrows back to the Big Bang because
 // space was smaller then. Galaxy worldlines spread apart with expansion; each is seen where it crosses the cone.

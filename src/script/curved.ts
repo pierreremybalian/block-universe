@@ -1,4 +1,4 @@
-// Stage 11 · The block bends. Clocks around Earth (the Altitude Comb), then light cones tipping toward a black hole
+// Stage 12 · The block bends. Clocks around Earth (the Altitude Comb), then light cones tipping toward a black hole
 // in ingoing Eddington–Finkelstein coordinates. Pure script shared by the scene and the HUD.
 
 import { ramp, track, windowed } from '../time/tracks.ts';

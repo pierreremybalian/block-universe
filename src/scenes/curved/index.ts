@@ -1,4 +1,4 @@
-// Stage 11 · The block bends (HANDOFF §10.11). Part one: one day around Earth. The planet's history is a tube whose
+// Stage 12 · The block bends (HANDOFF §10.11). Part one: one day around Earth. The planet's history is a tube whose
 // spin turns its meridians into helices; five clocks (sea level, Everest, space station, GPS, geostationary) bead
 // their own hours, and the rung joining "24 hours" on each clock slants (the Altitude Comb; rates exaggerated, the
 // HUD shows the real ones). Part two: a black hole. Light cones along a line toward it tip inward, exactly as in

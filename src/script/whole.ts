@@ -1,4 +1,4 @@
-// Stage 13 · The block of everything. Our past light cone in flat ΛCDM (Planck 2018): from today back to the Big
+// Stage 14 · The block of everything. Our past light cone in flat ΛCDM (Planck 2018): from today back to the Big
 // Bang it is a teardrop in proper distance. Galaxy worldlines spread apart with expansion; each one is seen where it
 // crosses the cone. Pure script shared by the scene and the HUD.
 

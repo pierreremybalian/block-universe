@@ -24,6 +24,14 @@
     "sources": [{ "label": "Stanford Encyclopedia of Philosophy: Time (the growing block)", "url": "https://plato.stanford.edu/entries/time/" }]
   },
   {
+    "id": "weyl",
+    "who": "Hermann Weyl",
+    "year": 1949,
+    "claim": "The objective world simply is, it does not happen. Only consciousness, crawling up the worldline of its body, lights one slice of it at a time.",
+    "camp": "block",
+    "sources": [{ "label": "Weyl 1949, Philosophy of Mathematics and Natural Science (Princeton University Press)", "url": "https://doi.org/10.1515/9781400833337" }]
+  },
+  {
     "id": "rietdijk",
     "who": "C. W. Rietdijk",
     "year": 1966,

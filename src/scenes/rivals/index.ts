@@ -1,4 +1,4 @@
-// Stage 12 · Is it true? — the Quadtych (HANDOFF §9, §10.12). The same shared block (src/shared/world.ts) is drawn
+// Stage 13 · Is it true? — the Quadtych (HANDOFF §9, §10.12). The same shared block (src/shared/world.ts) is drawn
 // four times, and only one thing differs between the panels: what each view of time says exists. Presentism keeps
 // only the slice; the growing block keeps the slice and everything below; the moving spotlight keeps everything
 // and lights one slice; the block universe keeps everything and lights none. The now climbs at the same pace in

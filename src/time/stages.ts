@@ -31,6 +31,7 @@ const ROWS: Row[] = [
   ['andromeda', 'argument', 9, 'zoom'],
   ['eternal', 'argument', 6, 'dissolve'],
   ['you', 'measured', 7, 'zoom'],
+  ['choice', 'argument', 8, 'dissolve'],
   ['curved', 'measured', 8, 'dissolve'],
   ['rivals', 'open', 8, 'dissolve'],
   ['whole', 'measured', 6, 'zoom'],
